@@ -91,6 +91,16 @@
 **Completed**: 2026-02-11 10:45 UTC  
 **Status**: ✅ Complete
 
+### Debug Fixes (2026-02-11 10:50 UTC):
+1. ✅ **Removed demo mode UI boxes** - Demo OTP info moved to test instructions only
+2. ✅ **Added gradient fallback for hero section** - Professional dark gradient when image unavailable
+3. ✅ **Hero image issue identified** - Hub file access denied during download (59 bytes JSON error)
+4. ✅ **Updated ASSETS.md** - Clear instructions for manual image placement
+
+**Note**: Hero image (`educonnect_hero_image.png`) needs manual upload to `public/assets/images/` from Hub files. Currently using gradient fallback.
+
+---
+
 ### Implementation Details:
 
 #### Login Page UI (Task d3-1)
