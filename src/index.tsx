@@ -952,9 +952,12 @@ app.get('/dashboard', (c) => {
             const initial = userName.charAt(0).toUpperCase();
             document.getElementById('profileIcon').textContent = initial;
             
-            // Show KYC banner if needed
+            // Show/Hide KYC banner based on status
+            const kycBanner = document.getElementById('kycBanner');
             if (user.kyc_status === 'pending') {
-                document.getElementById('kycBanner').classList.remove('hidden');
+                kycBanner.classList.remove('hidden');
+            } else {
+                kycBanner.classList.add('hidden');
             }
             
             // Render solutions
