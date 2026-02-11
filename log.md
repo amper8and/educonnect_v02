@@ -97,7 +97,13 @@
 3. ✅ **Hero image issue identified** - Hub file access denied during download (59 bytes JSON error)
 4. ✅ **Updated ASSETS.md** - Clear instructions for manual image placement
 
-**Note**: Hero image (`educonnect_hero_image.png`) needs manual upload to `public/assets/images/` from Hub files. Currently using gradient fallback.
+### Debug Fixes Round 2 (2026-02-11 11:23 UTC):
+1. ✅ **Downloaded actual hero image** - Using DownloadFileWrapper tool (1.2MB PNG, 1024x572)
+2. ✅ **Rebuilt project** - Vite copied image to dist/assets/images/
+3. ✅ **Verified image serving** - HTTP 200 OK, Content-Type: image/png
+4. ✅ **Hero image now displays correctly** - Beautiful classroom scene with student using tablet
+
+**Status**: Hero image fully functional!
 
 ---
 
