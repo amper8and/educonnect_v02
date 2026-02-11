@@ -74,6 +74,9 @@ app.get('/', (c) => {
             /* Left side - Hero section */
             .hero-section {
                 flex: 1;
+                /* Fallback gradient if image doesn't load */
+                background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+                /* Overlay + hero image */
                 background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), 
                             url('/assets/images/hero_image.png');
                 background-size: cover;
@@ -362,16 +365,6 @@ app.get('/', (c) => {
                 cursor: not-allowed;
             }
             
-            .demo-notice {
-                background: #fff3cd;
-                border: 1px solid #ffc107;
-                padding: 0.75rem;
-                border-radius: 4px;
-                margin-bottom: 1rem;
-                font-size: 0.85rem;
-                color: #856404;
-            }
-            
             /* Responsive */
             @media (max-width: 768px) {
                 .login-container {
@@ -414,10 +407,6 @@ app.get('/', (c) => {
                     
                     <h2 class="form-title">Welcome Back</h2>
                     <p class="form-subtitle">Sign in to access your education solutions</p>
-                    
-                    <div class="demo-notice">
-                        <strong>Demo Mode:</strong> Use OTP code <strong>123456</strong> for any phone/email
-                    </div>
                     
                     <div class="error-message" id="errorMessage"></div>
                     <div class="success-message" id="successMessage"></div>
@@ -470,10 +459,6 @@ app.get('/', (c) => {
                 <h3 class="otp-modal-title">Enter OTP Code</h3>
                 <p class="otp-modal-subtitle">We've sent a verification code to <span id="sentTo"></span></p>
                 
-                <div class="demo-notice">
-                    <strong>Demo OTP:</strong> <span id="demoOtp">123456</span>
-                </div>
-                
                 <div class="error-message" id="otpErrorMessage"></div>
                 
                 <input 
@@ -512,7 +497,6 @@ app.get('/', (c) => {
             const otpModal = document.getElementById('otpModal');
             const otpInput = document.getElementById('otpInput');
             const sentTo = document.getElementById('sentTo');
-            const demoOtp = document.getElementById('demoOtp');
             const cancelOtpBtn = document.getElementById('cancelOtpBtn');
             const verifyOtpBtn = document.getElementById('verifyOtpBtn');
             const otpErrorMessage = document.getElementById('otpErrorMessage');
@@ -576,9 +560,6 @@ app.get('/', (c) => {
                     
                     if (data.success) {
                         sentTo.textContent = phoneOrEmail;
-                        if (data.demo_otp) {
-                            demoOtp.textContent = data.demo_otp;
-                        }
                         otpModal.classList.add('show');
                         otpInput.focus();
                     } else {
