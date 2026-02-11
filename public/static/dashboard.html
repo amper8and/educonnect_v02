@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MTN EduConnect</title>
+    <style>
+        @font-face {
+            font-family: 'MTN Brighter Sans';
+            src: url('/fonts/MTN_Brighter_Sans_Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: 'MTN Brighter Sans';
+            src: url('/fonts/MTN_Brighter_Sans_Light.ttf') format('truetype');
+            font-weight: 300;
+        }
+        @font-face {
+            font-family: 'MTN Brighter Sans';
+            src: url('/fonts/MTN_Brighter_Sans_Bold.ttf') format('truetype');
+            font-weight: 700;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'MTN Brighter Sans', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .dashboard-header {
+            background: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .logo {
+            height: 40px;
+        }
+        
+        .dashboard-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #FFCB00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #000;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .profile-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Main Content */
+        .dashboard-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        /* Solution Grid */
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        /* Solution Card */
+        .solution-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .solution-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        
+        .solution-card.create-new {
+            border: 2px dashed #FFCB00;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+        
+        .create-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #FFCB00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 1rem;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .solution-type {
+            font-size: 0.875rem;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .solution-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #000;
+            margin: 0.5rem 0;
+        }
+        
+        .solution-details {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .solution-price {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .price-badge {
+            background: #FFCB00;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+        
+        .solution-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        
+        .status-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status-draft {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .status-cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        /* KYC Banner */
+        .kyc-banner {
+            background: linear-gradient(135deg, #FFCB00 0%, #FFA500 100%);
+            color: #000;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .kyc-banner h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .kyc-banner p {
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+        
+        .kyc-btn {
+            background: #000;
+            color: #FFCB00;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .kyc-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        /* KYC Step Indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step.active .step-number {
+            background: #FFCB00;
+            color: #000;
+        }
+        
+        .step.completed .step-number {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: center;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #FFCB00;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .file-upload {
+            border: 2px dashed #d0d0d0;
+            border-radius: 4px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .file-upload:hover {
+            border-color: #FFCB00;
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        .btn-primary {
+            background: #FFCB00;
+            color: #000;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 4px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: #E6B800;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #666;
+            padding: 0.875rem 2rem;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Profile Menu */
+        .profile-menu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            min-width: 200px;
+            z-index: 100;
+        }
+        
+        .profile-menu.show {
+            display: block;
+        }
+        
+        .menu-item {
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .menu-item.admin-only {
+            color: #FFCB00;
+            font-weight: 700;
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 1rem;
+            }
+            
+            .header-left {
+                gap: 1rem;
+            }
+            
+            .logo {
+                height: 30px;
+            }
+            
+            .dashboard-title {
+                font-size: 1.25rem;
+            }
+            
+            .dashboard-content {
+                padding: 0 1rem;
+            }
+            
+            .solutions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="/assets/logos/educonnect_landscape_logo.png" alt="EduConnect" class="logo" onerror="this.style.display='none'">
+            <h1 class="dashboard-title">Dashboard</h1>
+        </div>
+        <div class="header-right">
+            <div class="profile-icon" id="profileIcon">
+                <span id="userInitials">U</span>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Profile Menu -->
+    <div class="profile-menu" id="profileMenu">
+        <div class="menu-item" onclick="window.location.href='/profile'">Profile Settings</div>
+        <div class="menu-item admin-only" id="whitelistMenuItem" style="display: none;" onclick="openWhitelistModal()">Manage Whitelist</div>
+        <div class="menu-item admin-only" id="libraryMenuItem" style="display: none;" onclick="openLibraryModal()">Manage Solution Library</div>
+        <div class="menu-item" onclick="logout()">Logout</div>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <!-- KYC Banner (shown if KYC not completed) -->
+        <div class="kyc-banner" id="kycBanner" style="display: none;">
+            <div>
+                <h3>Complete Your Profile</h3>
+                <p>Please complete KYC verification to access all features</p>
+            </div>
+            <button class="kyc-btn" onclick="openKYCModal()">Start KYC</button>
+        </div>
+        
+        <!-- Content Area -->
+        <div id="solutionsContainer" class="loading">
+            Loading your solutions...
+        </div>
+    </main>
+    
+    <!-- KYC Modal -->
+    <div class="modal-overlay" id="kycModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Complete Your Profile</h2>
+                <button class="close-btn" onclick="closeKYCModal()">&times;</button>
+            </div>
+            
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1Indicator">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Identity</div>
+                </div>
+                <div class="step" id="step2Indicator">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Authorization</div>
+                </div>
+                <div class="step" id="step3Indicator">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Proof</div>
+                </div>
+                <div class="step" id="step4Indicator">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Documents</div>
+                </div>
+            </div>
+            
+            <!-- KYC Steps -->
+            <div id="kycStep1" class="kyc-step">
+                <h3 style="margin-bottom: 1rem;">Identity Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">First Name *</label>
+                        <input type="text" class="form-input" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name *</label>
+                        <input type="text" class="form-input" id="lastName" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ID / Passport Number *</label>
+                    <input type="text" class="form-input" id="idNumber" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date of Birth *</label>
+                    <input type="date" class="form-input" id="dob" required>
+                </div>
+                <button class="btn-primary" onclick="nextKYCStep(2)">Continue</button>
+                <button class="btn-secondary" onclick="saveAndExitKYC()">Save & Exit</button>
+            </div>
+            
+            <div id="kycStep2" class="kyc-step" style="display: none;">
+                <h3 style="margin-bottom: 1rem;">Authorization</h3>
+                <div class="form-group">
+                    <label class="form-label">Institution Name *</label>
+                    <input type="text" class="form-input" id="institutionName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Student/Staff ID *</label>
+                    <input type="text" class="form-input" id="staffId" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role *</label>
+                    <select class="form-input" id="role" required>
+                        <option value="">Select your role</option>
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="staff">Staff</option>
+                        <option value="parent">Parent</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="nextKYCStep(3)">Continue</button>
+                <button class="btn-secondary" onclick="nextKYCStep(1)">Back</button>
+            </div>
+            
+            <div id="kycStep3" class="kyc-step" style="display: none;">
+                <h3 style="margin-bottom: 1rem;">Proof of Humanity</h3>
+                <p style="margin-bottom: 1.5rem; color: #666;">Please upload a selfie holding a paper with today's date, your name, and ID number</p>
+                <div class="file-upload" onclick="document.getElementById('selfieInput').click()">
+                    <input type="file" id="selfieInput" accept="image/*" onchange="handleFileSelect(this, 'selfiePreview')">
+                    <div id="selfiePreview">
+                        📷 Click to upload selfie
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="nextKYCStep(4)">Continue</button>
+                <button class="btn-secondary" onclick="nextKYCStep(2)">Back</button>
+            </div>
+            
+            <div id="kycStep4" class="kyc-step" style="display: none;">
+                <h3 style="margin-bottom: 1rem;">Documentation</h3>
+                <div class="form-group">
+                    <label class="form-label">ID Document *</label>
+                    <div class="file-upload" onclick="document.getElementById('idDocInput').click()">
+                        <input type="file" id="idDocInput" accept="image/*,application/pdf" onchange="handleFileSelect(this, 'idDocPreview')">
+                        <div id="idDocPreview">
+                            📄 Click to upload ID document
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Proof of Residence *</label>
+                    <div class="file-upload" onclick="document.getElementById('proofResInput').click()">
+                        <input type="file" id="proofResInput" accept="image/*,application/pdf" onchange="handleFileSelect(this, 'proofResPreview')">
+                        <div id="proofResPreview">
+                            📄 Click to upload proof of residence
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="submitKYC()">Submit KYC</button>
+                <button class="btn-secondary" onclick="nextKYCStep(3)">Back</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>

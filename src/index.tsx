@@ -2,6 +2,9 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { serveStatic } from 'hono/cloudflare-workers'
 import auth from './routes/auth'
+import solutions from './routes/solutions'
+import kyc from './routes/kyc'
+import dashboard from './routes/dashboard'
 
 type Bindings = {
   DB: D1Database
@@ -12,17 +15,534 @@ const app = new Hono<{ Bindings: Bindings }>()
 // Enable CORS for API routes
 app.use('/api/*', cors())
 
-// Serve static files
-app.use('/static/*', serveStatic({ root: './public' }))
+// Serve static files - but skip the problematic serve-static middleware for now
+// app.use('/static/*', serveStatic({ root: './public' }))
 app.use('/assets/*', serveStatic({ root: './public' }))
 app.use('/fonts/*', serveStatic({ root: './public' }))
 
-// Mount auth routes
+// Mount API routes
 app.route('/api/auth', auth)
+app.route('/api/solutions', solutions)
+app.route('/api/kyc', kyc)
+app.route('/api/dashboard', dashboard)
 
 // Health check
 app.get('/api/health', (c) => {
   return c.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
+// Dashboard route - serve inline HTML for compatibility
+app.get('/dashboard', (c) => {
+  return c.html(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MTN EduConnect</title>
+    <style>
+        @font-face {
+            font-family: 'MTN Brighter Sans';
+            src: url('/fonts/MTN_Brighter_Sans_Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: 'MTN Brighter Sans';
+            src: url('/fonts/MTN_Brighter_Sans_Light.ttf') format('truetype');
+            font-weight: 300;
+        }
+        @font-face {
+            font-family: 'MTN Brighter Sans';
+            src: url('/fonts/MTN_Brighter_Sans_Bold.ttf') format('truetype');
+            font-weight: 700;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'MTN Brighter Sans', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .dashboard-header {
+            background: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .logo {
+            height: 40px;
+        }
+        
+        .dashboard-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #FFCB00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #000;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .profile-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Main Content */
+        .dashboard-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, #FFCB00 0%, #FFD633 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            color: #000;
+        }
+        
+        .welcome-banner h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .welcome-banner p {
+            opacity: 0.8;
+        }
+        
+        /* KYC Banner */
+        .kyc-banner {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .kyc-banner.hidden {
+            display: none;
+        }
+        
+        .kyc-banner-content h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #000;
+        }
+        
+        .kyc-banner-content p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .btn-complete-kyc {
+            background: #FFCB00;
+            color: #000;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .btn-complete-kyc:hover {
+            background: #E6B800;
+            transform: translateY(-2px);
+        }
+        
+        /* Solutions Grid */
+        .solutions-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #000;
+        }
+        
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        /* Solution Card */
+        .solution-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .solution-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        
+        .solution-card.create-new {
+            border: 2px dashed #FFCB00;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            background: #FFFEF5;
+        }
+        
+        .create-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #FFCB00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #000;
+            margin-bottom: 1rem;
+        }
+        
+        .create-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .solution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .solution-type {
+            font-size: 0.875rem;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .solution-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        
+        .status-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status-draft {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .solution-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 0.75rem;
+        }
+        
+        .solution-details {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .solution-price {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .price-item {
+            flex: 1;
+        }
+        
+        .price-label {
+            font-size: 0.75rem;
+            color: #999;
+            margin-bottom: 0.25rem;
+        }
+        
+        .price-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 1rem;
+            }
+            
+            .header-left {
+                gap: 1rem;
+            }
+            
+            .dashboard-title {
+                display: none;
+            }
+            
+            .dashboard-content {
+                padding: 0 1rem;
+            }
+            
+            .solutions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .kyc-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="/assets/logos/educonnect_landscape_logo.png" alt="EduConnect" class="logo" onerror="this.style.display='none'">
+            <h1 class="dashboard-title">My Solutions</h1>
+        </div>
+        <div class="header-right">
+            <div class="profile-icon" id="profileIcon"></div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <div class="loading" id="loading">Loading...</div>
+        
+        <div id="dashboardMain" style="display: none;">
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <h2 id="welcomeMessage">Welcome back!</h2>
+                <p>Manage your education connectivity solutions</p>
+            </div>
+            
+            <!-- KYC Pending Banner -->
+            <div class="kyc-banner hidden" id="kycBanner">
+                <div class="kyc-banner-content">
+                    <h3>Complete Your KYC Verification</h3>
+                    <p>Please complete your KYC verification to unlock all features</p>
+                </div>
+                <button class="btn-complete-kyc" id="btnCompleteKYC">Complete KYC</button>
+            </div>
+            
+            <!-- Solutions Section -->
+            <div class="solutions-section">
+                <h3>Your Solutions</h3>
+                <div class="solutions-grid" id="solutionsGrid">
+                    <!-- Create New Solution Card -->
+                    <div class="solution-card create-new" id="btnCreateSolution">
+                        <div class="create-icon">+</div>
+                        <div class="create-text">Create New Solution</div>
+                    </div>
+                    
+                    <!-- Solution cards will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Get session info
+        const sessionToken = localStorage.getItem('educonnect_session');
+        const localUser = JSON.parse(localStorage.getItem('educonnect_user') || '{}');
+        
+        // Redirect if not logged in
+        if (!sessionToken) {
+            window.location.href = '/';
+        }
+        
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/dashboard/data', {
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('educonnect_session');
+                        localStorage.removeItem('educonnect_user');
+                        window.location.href = '/';
+                        return;
+                    }
+                    throw new Error('Failed to load dashboard');
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderDashboard(data);
+                } else {
+                    throw new Error(data.message || 'Failed to load dashboard');
+                }
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                document.getElementById('loading').textContent = 'Error loading dashboard. Please refresh.';
+            }
+        }
+        
+        // Render dashboard
+        function renderDashboard(data) {
+            const { user, solutions } = data;
+            
+            // Hide loading, show main
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboardMain').style.display = 'block';
+            
+            // Update welcome message
+            const userName = user.name || user.email || user.phone || 'User';
+            document.getElementById('welcomeMessage').textContent = \`Welcome back, \${userName}!\`;
+            
+            // Update profile icon
+            const initial = userName.charAt(0).toUpperCase();
+            document.getElementById('profileIcon').textContent = initial;
+            
+            // Show KYC banner if needed
+            if (user.kyc_status === 'pending') {
+                document.getElementById('kycBanner').classList.remove('hidden');
+            }
+            
+            // Render solutions
+            renderSolutions(solutions);
+        }
+        
+        // Render solutions grid
+        function renderSolutions(solutions) {
+            const grid = document.getElementById('solutionsGrid');
+            
+            // Keep the create new card and add solution cards
+            solutions.forEach(solution => {
+                const card = createSolutionCard(solution);
+                grid.appendChild(card);
+            });
+        }
+        
+        // Create solution card HTML
+        function createSolutionCard(solution) {
+            const card = document.createElement('div');
+            card.className = 'solution-card';
+            card.onclick = () => viewSolution(solution.id);
+            
+            const statusClass = solution.status === 'active' ? 'status-active' : 'status-draft';
+            const statusText = solution.status.charAt(0).toUpperCase() + solution.status.slice(1);
+            
+            const onceOff = solution.price_once_off ? \`R\${parseFloat(solution.price_once_off).toFixed(2)}\` : 'R0.00';
+            const monthly = solution.price_monthly ? \`R\${parseFloat(solution.price_monthly).toFixed(2)}\` : 'R0.00';
+            
+            card.innerHTML = \`
+                <div class="solution-header">
+                    <div class="solution-type">\${solution.solution_type || 'Solution'}</div>
+                    <span class="solution-status \${statusClass}">\${statusText}</span>
+                </div>
+                <div class="solution-name">\${solution.name || 'Untitled Solution'}</div>
+                <div class="solution-details">
+                    \${solution.address ? \`<div>📍 \${solution.address}</div>\` : ''}
+                    \${solution.customer_name ? \`<div>👤 \${solution.customer_name}</div>\` : ''}
+                </div>
+                <div class="solution-price">
+                    <div class="price-item">
+                        <div class="price-label">Once-off</div>
+                        <div class="price-value">\${onceOff}</div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-label">Monthly</div>
+                        <div class="price-value">\${monthly}</div>
+                    </div>
+                </div>
+            \`;
+            
+            return card;
+        }
+        
+        // Event handlers
+        document.getElementById('profileIcon').addEventListener('click', () => {
+            // TODO: Show profile modal (Delivery 4)
+            alert('Profile settings coming soon!');
+        });
+        
+        document.getElementById('btnCreateSolution').addEventListener('click', () => {
+            // TODO: Navigate to solution builder (Delivery 5)
+            alert('Solution builder coming in Delivery 5!');
+        });
+        
+        document.getElementById('btnCompleteKYC').addEventListener('click', () => {
+            // TODO: Show KYC modal (Delivery 4)
+            alert('KYC modal coming soon!');
+        });
+        
+        function viewSolution(id) {
+            // TODO: View solution details (Delivery 5)
+            alert(\`Viewing solution \${id} - Details coming in Delivery 5!\`);
+        }
+        
+        // Load dashboard on page load
+        loadDashboard();
+    </script>
+</body>
+</html>
+  `)
 })
 
 // Main route - Login page
@@ -666,109 +1186,5 @@ app.get('/', (c) => {
   `)
 })
 
-// Dashboard placeholder (will be built in Delivery 4)
-app.get('/dashboard', (c) => {
-  return c.html(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dashboard - MTN EduConnect</title>
-        <style>
-            @font-face {
-                font-family: 'MTN Brighter Sans';
-                src: url('/fonts/MTN_Brighter_Sans_Bold.ttf') format('truetype');
-                font-weight: 700;
-            }
-            body {
-                font-family: 'MTN Brighter Sans', sans-serif;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 100vh;
-                background: #FFCB00;
-                margin: 0;
-            }
-            .container {
-                background: white;
-                padding: 3rem;
-                border-radius: 8px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-                text-align: center;
-            }
-            h1 {
-                color: #000;
-                font-size: 2rem;
-                margin-bottom: 1rem;
-            }
-            p {
-                color: #666;
-                margin-bottom: 2rem;
-            }
-            .btn {
-                padding: 1rem 2rem;
-                background: #000;
-                color: #FFCB00;
-                border: none;
-                border-radius: 4px;
-                font-family: 'MTN Brighter Sans', sans-serif;
-                font-weight: 700;
-                cursor: pointer;
-                text-decoration: none;
-                display: inline-block;
-            }
-            .user-info {
-                background: #f5f5f5;
-                padding: 1rem;
-                border-radius: 4px;
-                margin-bottom: 2rem;
-                text-align: left;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>✅ Login Successful!</h1>
-            <p>Dashboard will be built in Delivery 4</p>
-            <div class="user-info" id="userInfo"></div>
-            <a href="/" class="btn" onclick="logout(event)">Logout</a>
-        </div>
-        
-        <script>
-            const user = JSON.parse(localStorage.getItem('educonnect_user') || '{}');
-            const userInfoDiv = document.getElementById('userInfo');
-            
-            userInfoDiv.innerHTML = \`
-                <strong>User Details:</strong><br>
-                ID: \${user.id}<br>
-                Phone: \${user.phone || 'N/A'}<br>
-                Email: \${user.email || 'N/A'}<br>
-                Role: \${user.role}<br>
-                KYC Status: \${user.kyc_status}
-            \`;
-            
-            async function logout(e) {
-                e.preventDefault();
-                const token = localStorage.getItem('educonnect_session');
-                
-                try {
-                    await fetch('/api/auth/logout', {
-                        method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + token }
-                    });
-                } catch (error) {
-                    console.error('Logout error:', error);
-                }
-                
-                localStorage.removeItem('educonnect_session');
-                localStorage.removeItem('educonnect_user');
-                window.location.href = '/';
-            }
-        </script>
-    </body>
-    </html>
-  `)
-})
 
 export default app
