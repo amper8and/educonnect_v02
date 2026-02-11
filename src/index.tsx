@@ -2351,7 +2351,7 @@ app.get('/dashboard', (c) => {
   `)
 })
 
-// Solution Builder route
+// Solution Builder route - Single Page Design
 app.get('/solution-builder', (c) => {
   return c.html(`
     <!DOCTYPE html>
@@ -2365,19 +2365,6 @@ app.get('/solution-builder', (c) => {
                 font-family: 'MTN Brighter Sans';
                 src: url('/fonts/MTN_Brighter_Sans_Regular.ttf') format('truetype');
                 font-weight: 400;
-                font-style: normal;
-            }
-            @font-face {
-                font-family: 'MTN Brighter Sans';
-                src: url('/fonts/MTN_Brighter_Sans_Light.ttf') format('truetype');
-                font-weight: 300;
-                font-style: normal;
-            }
-            @font-face {
-                font-family: 'MTN Brighter Sans';
-                src: url('/fonts/MTN_Brighter_Sans_Bold.ttf') format('truetype');
-                font-weight: 700;
-                font-style: normal;
             }
             
             * {
@@ -2389,391 +2376,443 @@ app.get('/solution-builder', (c) => {
             body {
                 font-family: 'MTN Brighter Sans', sans-serif;
                 background: #f5f5f5;
+                padding: 20px;
             }
             
             /* Header */
-            .builder-header {
-                background: white;
-                padding: 1.5rem 2rem;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            .header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                margin-bottom: 30px;
             }
             
-            .header-left {
+            .logo-title {
                 display: flex;
                 align-items: center;
-                gap: 1.5rem;
+                gap: 20px;
             }
             
             .logo {
-                height: 40px;
+                background: #FFCB00;
+                padding: 10px 20px;
+                font-weight: 700;
+                font-size: 1.2rem;
             }
             
-            .builder-title {
+            .title {
                 font-size: 1.5rem;
                 font-weight: 700;
-                color: #000;
             }
             
-            .btn-back {
-                padding: 0.75rem 1.5rem;
+            .total-indicator {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .total-label {
+                font-size: 1rem;
+            }
+            
+            .total-amount {
                 background: white;
                 border: 2px solid #000;
-                border-radius: 8px;
-                font-family: 'MTN Brighter Sans', sans-serif;
-                font-weight: 600;
-                color: #000;
-                cursor: pointer;
-                transition: all 0.3s;
-            }
-            
-            .btn-back:hover {
-                background: #f5f5f5;
-            }
-            
-            /* Progress Steps */
-            .progress-container {
-                background: white;
-                padding: 2rem;
-                margin: 2rem auto;
-                max-width: 1200px;
-                border-radius: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }
-            
-            .progress-steps {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                position: relative;
-                margin-bottom: 2rem;
-            }
-            
-            .progress-line {
-                position: absolute;
-                top: 20px;
-                left: 0;
-                right: 0;
-                height: 3px;
-                background: #e0e0e0;
-                z-index: 0;
-            }
-            
-            .progress-line-fill {
-                position: absolute;
-                top: 0;
-                left: 0;
-                height: 100%;
-                background: #FFCB00;
-                transition: width 0.3s;
-            }
-            
-            .step {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                position: relative;
-                z-index: 1;
-                flex: 1;
-            }
-            
-            .step-circle {
-                width: 40px;
-                height: 40px;
                 border-radius: 50%;
-                background: white;
-                border: 3px solid #e0e0e0;
+                width: 80px;
+                height: 80px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-weight: 700;
-                color: #999;
-                transition: all 0.3s;
-            }
-            
-            .step.active .step-circle {
-                border-color: #FFCB00;
-                background: #FFCB00;
-                color: #000;
-            }
-            
-            .step.completed .step-circle {
-                border-color: #00C853;
-                background: #00C853;
-                color: white;
-            }
-            
-            .step-label {
-                margin-top: 0.5rem;
-                font-size: 0.875rem;
-                color: #666;
-                text-align: center;
-            }
-            
-            .step.active .step-label {
-                color: #000;
-                font-weight: 600;
-            }
-            
-            /* Step Content */
-            .step-content {
-                background: white;
-                padding: 2rem;
-                margin: 0 auto 2rem;
-                max-width: 1200px;
-                border-radius: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }
-            
-            .step-panel {
-                display: none;
-            }
-            
-            .step-panel.active {
-                display: block;
-            }
-            
-            .step-heading {
                 font-size: 1.5rem;
                 font-weight: 700;
-                color: #000;
-                margin-bottom: 1.5rem;
             }
             
             /* Solution Type Selection */
             .solution-types {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 1.5rem;
-                margin-bottom: 2rem;
-            }
-            
-            .solution-type-card {
                 background: white;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            
+            .section-label {
+                font-weight: 600;
+                margin-bottom: 15px;
+            }
+            
+            .types-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+            }
+            
+            .type-card {
                 border: 3px solid #e0e0e0;
-                border-radius: 12px;
-                padding: 2rem;
+                border-radius: 8px;
+                padding: 15px;
                 cursor: pointer;
+                position: relative;
                 transition: all 0.3s;
-                text-align: center;
             }
             
-            .solution-type-card:hover {
+            .type-card:hover {
                 border-color: #FFCB00;
-                transform: translateY(-4px);
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             }
             
-            .solution-type-card.selected {
+            .type-card.selected {
                 border-color: #FFCB00;
                 background: #FFFEF5;
             }
             
-            .solution-icon {
-                width: 80px;
-                height: 80px;
-                margin: 0 auto 1rem;
+            .type-radio {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 20px;
+                height: 20px;
+                border: 2px solid #ccc;
+                border-radius: 50%;
+            }
+            
+            .type-card.selected .type-radio {
+                border-color: #FFCB00;
+                background: #FFCB00;
+            }
+            
+            .type-icon {
+                width: 60px;
+                height: 60px;
                 background: #FFCB00;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 2.5rem;
+                font-size: 2rem;
+                margin-bottom: 10px;
             }
             
-            .solution-name {
-                font-size: 1.25rem;
+            .type-name {
                 font-weight: 700;
-                color: #000;
-                margin-bottom: 0.5rem;
+                margin-bottom: 5px;
             }
             
-            .solution-desc {
+            .type-desc {
                 font-size: 0.875rem;
                 color: #666;
             }
             
-            /* Form Fields */
-            .form-group {
-                margin-bottom: 1.5rem;
-            }
-            
-            .form-label {
-                display: block;
-                font-weight: 600;
-                color: #000;
-                margin-bottom: 0.5rem;
-            }
-            
-            .form-input {
-                width: 100%;
-                padding: 0.75rem;
-                border: 2px solid #e0e0e0;
+            /* Address & Customer Section */
+            .details-section {
+                background: white;
+                padding: 20px;
                 border-radius: 8px;
-                font-family: 'MTN Brighter Sans', sans-serif;
-                font-size: 1rem;
-                transition: border-color 0.3s;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 20px;
             }
             
-            .form-input:focus {
+            .detail-field {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .field-icon {
+                width: 40px;
+                height: 40px;
+                background: #FFCB00;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+            }
+            
+            .field-input {
+                flex: 1;
+                padding: 10px 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 25px;
+                font-family: inherit;
+                font-size: 1rem;
+            }
+            
+            .field-input:focus {
                 outline: none;
                 border-color: #FFCB00;
             }
             
-            .form-row {
+            .availability {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 0.875rem;
+            }
+            
+            .availability-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #00C853;
+            }
+            
+            /* Product Selection Area */
+            .products-section {
                 display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
+                grid-template-columns: 1fr 350px;
+                gap: 20px;
+                margin-bottom: 20px;
             }
             
-            /* Product Selection */
-            .products-list {
-                margin-bottom: 2rem;
-            }
-            
-            .product-item {
-                background: #f9f9f9;
-                border: 2px solid #e0e0e0;
+            .products-main {
+                background: white;
+                padding: 20px;
                 border-radius: 8px;
-                padding: 1.5rem;
-                margin-bottom: 1rem;
-                transition: all 0.3s;
             }
             
-            .product-item:hover {
-                border-color: #FFCB00;
+            .product-row {
+                padding: 15px 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .product-row:last-child {
+                border-bottom: none;
             }
             
             .product-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 1rem;
+                margin-bottom: 10px;
             }
             
             .product-name {
-                font-size: 1.125rem;
                 font-weight: 700;
-                color: #000;
             }
             
             .product-options {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 1rem;
+                display: flex;
+                gap: 15px;
+                align-items: center;
             }
             
-            .option-card {
-                background: white;
-                border: 2px solid #e0e0e0;
-                border-radius: 8px;
-                padding: 1rem;
+            .option-group {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .option-selector {
+                display: flex;
+                align-items: center;
+                gap: 5px;
                 cursor: pointer;
-                transition: all 0.3s;
             }
             
-            .option-card:hover {
+            .option-radio {
+                width: 24px;
+                height: 24px;
+                border: 2px solid #ccc;
+                border-radius: 50%;
+                position: relative;
+            }
+            
+            .option-selector.selected .option-radio {
                 border-color: #FFCB00;
             }
             
-            .option-card.selected {
-                border-color: #FFCB00;
+            .option-selector.selected .option-radio::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 12px;
+                height: 12px;
+                background: #FFCB00;
+                border-radius: 50%;
+            }
+            
+            .option-label {
+                font-size: 0.875rem;
+            }
+            
+            /* Key Features Panel */
+            .features-panel {
                 background: #FFFEF5;
+                padding: 20px;
+                border-radius: 8px;
+                border: 2px solid #FFCB00;
             }
             
-            .option-name {
-                font-weight: 600;
-                color: #000;
-                margin-bottom: 0.5rem;
-            }
-            
-            .option-price {
-                font-size: 1.125rem;
+            .features-title {
                 font-weight: 700;
-                color: #FFCB00;
+                margin-bottom: 15px;
             }
             
-            /* Summary */
+            .feature-item {
+                padding: 8px 0;
+                font-size: 0.875rem;
+                color: #666;
+            }
+            
+            .feature-item::before {
+                content: '•';
+                color: #FFCB00;
+                font-weight: 700;
+                margin-right: 8px;
+            }
+            
+            /* Chat Interface */
+            .chat-section {
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            
+            .chat-input-area {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+            
+            .chat-input {
+                flex: 1;
+                padding: 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 25px;
+                font-family: inherit;
+                font-size: 1rem;
+            }
+            
+            .chat-button {
+                width: 50px;
+                height: 50px;
+                background: #FFCB00;
+                border: none;
+                border-radius: 50%;
+                cursor: pointer;
+                font-size: 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .chat-button:hover {
+                background: #E6B800;
+            }
+            
+            /* Account Modal */
+            .account-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.6);
+                z-index: 1000;
+                padding: 20px;
+                overflow-y: auto;
+            }
+            
+            .account-modal.show {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .modal-content {
+                background: white;
+                border-radius: 12px;
+                max-width: 900px;
+                width: 100%;
+                padding: 30px;
+            }
+            
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            
+            .modal-close {
+                background: none;
+                border: none;
+                font-size: 2rem;
+                cursor: pointer;
+            }
+            
             .summary-section {
                 background: #f9f9f9;
+                padding: 20px;
                 border-radius: 8px;
-                padding: 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-            
-            .summary-title {
-                font-size: 1.125rem;
-                font-weight: 700;
-                color: #000;
-                margin-bottom: 1rem;
+                margin-bottom: 20px;
             }
             
             .summary-row {
                 display: flex;
                 justify-content: space-between;
-                padding: 0.75rem 0;
+                padding: 10px 0;
                 border-bottom: 1px solid #e0e0e0;
             }
             
-            .summary-row:last-child {
-                border-bottom: none;
+            .term-options {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+                margin: 20px 0;
             }
             
-            .summary-label {
-                color: #666;
-            }
-            
-            .summary-value {
-                font-weight: 600;
-                color: #000;
-            }
-            
-            .summary-total {
-                background: #FFCB00;
-                padding: 1rem;
+            .term-btn {
+                padding: 15px;
+                border: 2px solid #e0e0e0;
                 border-radius: 8px;
-                margin-top: 1rem;
+                background: white;
+                cursor: pointer;
+                text-align: center;
             }
             
-            .summary-total .summary-row {
-                border-bottom: none;
-                padding: 0.5rem 0;
+            .term-btn.selected {
+                border-color: #FFCB00;
+                background: #FFFEF5;
             }
             
-            .summary-total .summary-label,
-            .summary-total .summary-value {
-                font-size: 1.25rem;
+            .term-label {
                 font-weight: 700;
-                color: #000;
+                margin-bottom: 5px;
             }
             
-            /* Buttons */
-            .button-group {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 2rem;
+            .term-discount {
+                font-size: 0.875rem;
+                color: #00C853;
+            }
+            
+            .action-buttons {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                margin-top: 20px;
             }
             
             .btn {
-                padding: 0.75rem 2rem;
+                padding: 15px;
                 border: none;
-                border-radius: 8px;
-                font-family: 'MTN Brighter Sans', sans-serif;
+                border-radius: 25px;
+                font-family: inherit;
                 font-weight: 600;
                 font-size: 1rem;
                 cursor: pointer;
-                transition: all 0.3s;
             }
             
             .btn-primary {
                 background: #FFCB00;
                 color: #000;
-            }
-            
-            .btn-primary:hover {
-                background: #E6B800;
             }
             
             .btn-secondary {
@@ -2782,311 +2821,400 @@ app.get('/solution-builder', (c) => {
                 border: 2px solid #000;
             }
             
-            .btn-secondary:hover {
-                background: #f5f5f5;
+            .btn-cancel {
+                background: #f0f0f0;
+                color: #666;
             }
             
-            .btn:disabled {
-                background: #e0e0e0;
-                color: #999;
-                cursor: not-allowed;
+            /* Usage Tab */
+            .tab-buttons {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
             }
             
-            /* Term Selection */
-            .term-selector {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 1rem;
-                margin-bottom: 1.5rem;
-            }
-            
-            .term-option {
+            .tab-btn {
+                padding: 10px 20px;
                 background: white;
                 border: 2px solid #e0e0e0;
                 border-radius: 8px;
-                padding: 1rem;
-                text-align: center;
                 cursor: pointer;
-                transition: all 0.3s;
+                font-weight: 600;
             }
             
-            .term-option:hover {
-                border-color: #FFCB00;
-            }
-            
-            .term-option.selected {
+            .tab-btn.active {
                 border-color: #FFCB00;
                 background: #FFFEF5;
             }
             
-            .term-months {
-                font-size: 1.25rem;
-                font-weight: 700;
-                color: #000;
-                margin-bottom: 0.25rem;
+            .usage-cards {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+                margin-bottom: 20px;
             }
             
-            .term-discount {
+            .usage-card {
+                background: white;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 20px;
+                text-align: center;
+            }
+            
+            .usage-value {
+                font-size: 2rem;
+                font-weight: 700;
+                color: #FFCB00;
+            }
+            
+            .usage-label {
                 font-size: 0.875rem;
-                color: #00C853;
+                color: #666;
+                margin-top: 5px;
+            }
+            
+            .usage-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            
+            .usage-table th,
+            .usage-table td {
+                padding: 10px;
+                text-align: left;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .usage-table th {
+                background: #f9f9f9;
                 font-weight: 600;
             }
             
             /* Responsive */
             @media (max-width: 768px) {
-                .builder-header {
-                    padding: 1rem;
-                    flex-direction: column;
-                    gap: 1rem;
-                }
-                
-                .header-left {
-                    flex-direction: column;
-                    gap: 0.5rem;
-                }
-                
-                .builder-title {
-                    font-size: 1.25rem;
-                }
-                
-                .progress-container,
-                .step-content {
-                    margin: 1rem;
-                    padding: 1rem;
-                }
-                
-                .solution-types {
-                    grid-template-columns: 1fr;
-                }
-                
-                .form-row {
-                    grid-template-columns: 1fr;
-                }
-                
-                .term-selector {
+                .types-grid {
                     grid-template-columns: repeat(2, 1fr);
                 }
                 
-                .button-group {
+                .products-section {
+                    grid-template-columns: 1fr;
+                }
+                
+                .details-section {
                     flex-direction: column;
-                    gap: 1rem;
+                }
+                
+                .term-options {
+                    grid-template-columns: repeat(2, 1fr);
                 }
             }
         </style>
     </head>
     <body>
         <!-- Header -->
-        <div class="builder-header">
-            <div class="header-left">
-                <div class="logo">📱</div>
-                <h1 class="builder-title">Solution Builder</h1>
+        <div class="header">
+            <div class="logo-title">
+                <div class="logo">EduConnect</div>
+                <div class="title">Solution Builder</div>
             </div>
-            <button class="btn-back" id="btnBack">← Back to Dashboard</button>
-        </div>
-        
-        <!-- Progress Steps -->
-        <div class="progress-container">
-            <div class="progress-steps">
-                <div class="progress-line">
-                    <div class="progress-line-fill" id="progressFill" style="width: 0%"></div>
-                </div>
-                <div class="step active" data-step="1">
-                    <div class="step-circle">1</div>
-                    <div class="step-label">Solution Type</div>
-                </div>
-                <div class="step" data-step="2">
-                    <div class="step-circle">2</div>
-                    <div class="step-label">Site Details</div>
-                </div>
-                <div class="step" data-step="3">
-                    <div class="step-circle">3</div>
-                    <div class="step-label">Products</div>
-                </div>
-                <div class="step" data-step="4">
-                    <div class="step-circle">4</div>
-                    <div class="step-label">Summary</div>
-                </div>
+            <div class="total-indicator">
+                <span class="total-label">Your total</span>
+                <div class="total-amount" id="totalAmount">R99</div>
             </div>
         </div>
         
-        <!-- Step Content -->
-        <div class="step-content">
-            <!-- Step 1: Solution Type -->
-            <div class="step-panel active" id="step1">
-                <h2 class="step-heading">Select Solution Type</h2>
-                <div class="solution-types">
-                    <div class="solution-type-card" data-type="EduStudent">
-                        <div class="solution-icon">📚</div>
-                        <div class="solution-name">EduStudent</div>
-                        <div class="solution-desc">Student-focused connectivity solutions</div>
+        <!-- Solution Type Selection -->
+        <div class="solution-types">
+            <div class="section-label">I need:</div>
+            <div class="types-grid">
+                <div class="type-card" data-type="EduStudent">
+                    <div class="type-radio"></div>
+                    <div class="type-icon">📚</div>
+                    <div class="type-name">EduStudent</div>
+                    <div class="type-desc">Student connectivity on the go</div>
+                </div>
+                <div class="type-card" data-type="EduFlex">
+                    <div class="type-radio"></div>
+                    <div class="type-icon">📍</div>
+                    <div class="type-name">EduFlex</div>
+                    <div class="type-desc">Student connectivity @ my accommodation</div>
+                </div>
+                <div class="type-card" data-type="EduSchool">
+                    <div class="type-radio"></div>
+                    <div class="type-icon">🏫</div>
+                    <div class="type-name">EduSchool</div>
+                    <div class="type-desc">Always On productivity for education sites</div>
+                </div>
+                <div class="type-card" data-type="EduSafe">
+                    <div class="type-radio"></div>
+                    <div class="type-icon">🛡️</div>
+                    <div class="type-name">EduSafe</div>
+                    <div class="type-desc">Safety first student protection & monitoring</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Address & Customer Details -->
+        <div class="details-section">
+            <div class="section-label">For:</div>
+            <div class="detail-field">
+                <div class="field-icon">🏫</div>
+                <input type="text" class="field-input" id="addressInput" placeholder="Address:">
+            </div>
+            <div class="detail-field">
+                <div class="field-icon">👤</div>
+                <input type="text" class="field-input" id="customerInput" placeholder="Customer:">
+            </div>
+            <div class="availability">
+                <span>This service is available</span>
+                <div class="availability-dot"></div>
+                <div class="availability-dot" style="background: #FFC107;"></div>
+                <div class="availability-dot" style="background: #e0e0e0;"></div>
+            </div>
+        </div>
+        
+        <!-- Product Selection & Features -->
+        <div class="products-section">
+            <div class="products-main">
+                <div class="section-label">Setup as follows:</div>
+                
+                <!-- Prepaid Bundle -->
+                <div class="product-row">
+                    <div class="product-header">
+                        <div class="product-name">Prepaid bundle</div>
                     </div>
-                    <div class="solution-type-card" data-type="EduFlex">
-                        <div class="solution-icon">📍</div>
-                        <div class="solution-name">EduFlex</div>
-                        <div class="solution-desc">Flexible wireless connectivity</div>
-                    </div>
-                    <div class="solution-type-card" data-type="EduSchool">
-                        <div class="solution-icon">🏫</div>
-                        <div class="solution-name">EduSchool</div>
-                        <div class="solution-desc">Complete school connectivity</div>
-                    </div>
-                    <div class="solution-type-card" data-type="EduSafe">
-                        <div class="solution-icon">🛡️</div>
-                        <div class="solution-name">EduSafe</div>
-                        <div class="solution-desc">Safety and security solutions</div>
+                    <div class="product-options">
+                        <div class="option-group">
+                            <div class="option-selector" data-product="prepaid" data-value="5GB">
+                                <div class="option-radio"></div>
+                                <span class="option-label">5GB + 50mins</span>
+                            </div>
+                            <div class="option-selector selected" data-product="prepaid" data-value="10GB">
+                                <div class="option-radio"></div>
+                                <span class="option-label">10GB + 100mins</span>
+                            </div>
+                            <div class="option-selector" data-product="prepaid" data-value="25GB">
+                                <div class="option-radio"></div>
+                                <span class="option-label">25GB + 200mins</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="button-group">
-                    <div></div>
-                    <button class="btn btn-primary" id="btnNext1" disabled>Next Step →</button>
+                <!-- Uncapped Wireless -->
+                <div class="product-row">
+                    <div class="product-header">
+                        <div class="product-name">Uncapped wireless</div>
+                    </div>
+                    <div class="product-options">
+                        <div class="option-group">
+                            <div class="option-selector" data-product="wireless" data-value="10Mbps">
+                                <div class="option-radio"></div>
+                                <span class="option-label">10Mbps</span>
+                            </div>
+                            <div class="option-selector" data-product="wireless" data-value="20Mbps">
+                                <div class="option-radio"></div>
+                                <span class="option-label">20Mbps</span>
+                            </div>
+                            <div class="option-selector" data-product="wireless" data-value="100Mbps">
+                                <div class="option-radio"></div>
+                                <span class="option-label">100Mbps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Uncapped Fibre -->
+                <div class="product-row">
+                    <div class="product-header">
+                        <div class="product-name">Uncapped fibre</div>
+                    </div>
+                    <div class="product-options">
+                        <div class="option-group">
+                            <div class="option-selector" data-product="fibre" data-value="50Mbps">
+                                <div class="option-radio"></div>
+                                <span class="option-label">50Mbps</span>
+                            </div>
+                            <div class="option-selector" data-product="fibre" data-value="200Mbps">
+                                <div class="option-radio"></div>
+                                <span class="option-label">200Mbps</span>
+                            </div>
+                            <div class="option-selector" data-product="fibre" data-value="500Mbps">
+                                <div class="option-radio"></div>
+                                <span class="option-label">500Mbps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Services -->
+                <div class="product-row">
+                    <div class="product-header">
+                        <div class="product-name">Additional Services</div>
+                    </div>
+                    <div class="product-options">
+                        <div class="option-selector selected" data-product="services" data-value="ai-tutor">
+                            <div class="option-radio"></div>
+                            <span class="option-label">AI-Tutor & Market</span>
+                        </div>
+                        <div class="option-selector" data-product="services" data-value="apn">
+                            <div class="option-radio"></div>
+                            <span class="option-label">APN + Eagle Eye</span>
+                        </div>
+                        <div class="option-selector" data-product="services" data-value="firewall">
+                            <div class="option-radio"></div>
+                            <span class="option-label">Secure Firewall</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Options -->
+                <div class="product-row">
+                    <div class="product-header">
+                        <div class="product-name">Security & Tracking</div>
+                    </div>
+                    <div class="product-options">
+                        <div class="option-selector" data-product="security" data-value="powerfleet-video">
+                            <div class="option-radio"></div>
+                            <span class="option-label">PowerFleet AI Video</span>
+                        </div>
+                        <div class="option-selector" data-product="security" data-value="powerfleet-dash">
+                            <div class="option-radio"></div>
+                            <span class="option-label">PowerFleet Dash Cam</span>
+                        </div>
+                        <div class="option-selector" data-product="security" data-value="mix-telematics">
+                            <div class="option-radio"></div>
+                            <span class="option-label">MiX Telematics</span>
+                        </div>
+                        <div class="option-selector" data-product="security" data-value="mypanic">
+                            <div class="option-radio"></div>
+                            <span class="option-label">myPanic App</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Step 2: Site Details -->
-            <div class="step-panel" id="step2">
-                <h2 class="step-heading">Site Details</h2>
-                <form id="siteDetailsForm">
-                    <div class="form-group">
-                        <label class="form-label">Solution Name</label>
-                        <input type="text" class="form-input" id="solutionName" placeholder="e.g., Springfield High School" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Customer Name</label>
-                            <input type="text" class="form-input" id="customerName" placeholder="Enter customer name" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Contact Number</label>
-                            <input type="tel" class="form-input" id="contactNumber" placeholder="e.g., +27821234567" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Site Address</label>
-                        <input type="text" class="form-input" id="siteAddress" placeholder="Full physical address" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">City</label>
-                            <input type="text" class="form-input" id="city" placeholder="City" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Postal Code</label>
-                            <input type="text" class="form-input" id="postalCode" placeholder="Postal code" required>
-                        </div>
-                    </div>
-                </form>
-                
-                <div class="button-group">
-                    <button class="btn btn-secondary" id="btnBack2">← Previous</button>
-                    <button class="btn btn-primary" id="btnNext2">Next Step →</button>
-                </div>
+            <!-- Key Features Panel -->
+            <div class="features-panel">
+                <div class="features-title">Key features:</div>
+                <div class="feature-item">Zero-rated access to MTN school portal</div>
+                <div class="feature-item">Free parent calls</div>
+                <div class="feature-item">Additional education apps & services access</div>
             </div>
-            
-            <!-- Step 3: Product Selection -->
-            <div class="step-panel" id="step3">
-                <h2 class="step-heading">Select Products</h2>
+        </div>
+        
+        <!-- LLM Chat Interface -->
+        <div class="chat-section">
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Ask me anything about your solution...">
+                <button class="chat-button" id="chatSend">💬</button>
+            </div>
+        </div>
+        
+        <!-- Account Modal -->
+        <div class="account-modal" id="accountModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Solution Summary</h2>
+                    <button class="modal-close" id="modalClose">&times;</button>
+                </div>
                 
-                <div class="form-group">
-                    <label class="form-label">Contract Term</label>
-                    <div class="term-selector">
-                        <div class="term-option" data-term="0">
-                            <div class="term-months">Month-to-Month</div>
+                <!-- Tabs -->
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="overview">Overview</button>
+                    <button class="tab-btn" data-tab="usage">By Solution</button>
+                </div>
+                
+                <!-- Overview Tab -->
+                <div class="tab-content" id="overviewTab">
+                    <div class="summary-section">
+                        <div class="summary-row">
+                            <span>Once off Setup Costs:</span>
+                            <strong id="setupCost">R799</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Monthly Recurring Costs:</span>
+                            <strong id="monthlyCost">R99/month</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="section-label">Contract Term Options:</div>
+                    <div class="term-options">
+                        <div class="term-btn selected" data-term="0">
+                            <div class="term-label">Month-to-month</div>
                             <div class="term-discount">No discount</div>
                         </div>
-                        <div class="term-option" data-term="6">
-                            <div class="term-months">6 Months</div>
-                            <div class="term-discount">5% off</div>
+                        <div class="term-btn" data-term="6">
+                            <div class="term-label">6 months</div>
+                            <div class="term-discount">-5%</div>
                         </div>
-                        <div class="term-option selected" data-term="12">
-                            <div class="term-months">12 Months</div>
-                            <div class="term-discount">10% off</div>
+                        <div class="term-btn" data-term="12">
+                            <div class="term-label">12 months</div>
+                            <div class="term-discount">-10%</div>
                         </div>
-                        <div class="term-option" data-term="24">
-                            <div class="term-months">24 Months</div>
-                            <div class="term-discount">20% off</div>
+                        <div class="term-btn" data-term="24">
+                            <div class="term-label">24 months</div>
+                            <div class="term-discount">-20%</div>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="products-list" id="productsList">
-                    <!-- Products will be loaded dynamically -->
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn btn-secondary" id="btnBack3">← Previous</button>
-                    <button class="btn btn-primary" id="btnNext3">Review Summary →</button>
-                </div>
-            </div>
-            
-            <!-- Step 4: Summary -->
-            <div class="step-panel" id="step4">
-                <h2 class="step-heading">Solution Summary</h2>
-                
-                <div class="summary-section">
-                    <div class="summary-title">Solution Details</div>
-                    <div class="summary-row">
-                        <span class="summary-label">Type:</span>
-                        <span class="summary-value" id="summaryType">-</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">Name:</span>
-                        <span class="summary-value" id="summaryName">-</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">Customer:</span>
-                        <span class="summary-value" id="summaryCustomer">-</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">Address:</span>
-                        <span class="summary-value" id="summaryAddress">-</span>
-                    </div>
-                </div>
-                
-                <div class="summary-section">
-                    <div class="summary-title">Selected Products</div>
-                    <div id="summaryProducts">
-                        <!-- Products will be listed here -->
-                    </div>
-                </div>
-                
-                <div class="summary-section">
-                    <div class="summary-title">Pricing</div>
-                    <div class="summary-row">
-                        <span class="summary-label">Contract Term:</span>
-                        <span class="summary-value" id="summaryTerm">-</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">Once-off Fee:</span>
-                        <span class="summary-value" id="summaryOnceOff">R 0</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">Monthly Fee (before discount):</span>
-                        <span class="summary-value" id="summaryMonthlyBefore">R 0</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">Discount:</span>
-                        <span class="summary-value" id="summaryDiscount">0%</span>
                     </div>
                     
-                    <div class="summary-total">
-                        <div class="summary-row">
-                            <span class="summary-label">Once-off Total:</span>
-                            <span class="summary-value" id="summaryTotalOnceOff">R 0</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="summary-label">Monthly Total:</span>
-                            <span class="summary-value" id="summaryTotalMonthly">R 0</span>
-                        </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="btnSave">Save</button>
+                        <button class="btn btn-primary" id="btnBuyUpgrade">Buy / Upgrade</button>
+                        <button class="btn btn-secondary" id="btnCreateOffer">Create Offer</button>
+                        <button class="btn btn-cancel" id="btnCancel">Cancel</button>
                     </div>
                 </div>
                 
-                <div class="button-group">
-                    <button class="btn btn-secondary" id="btnBack4">← Previous</button>
-                    <button class="btn btn-primary" id="btnSubmit">Create Solution</button>
+                <!-- Usage Tab -->
+                <div class="tab-content" id="usageTab" style="display: none;">
+                    <div class="usage-cards">
+                        <div class="usage-card">
+                            <div class="usage-value" id="dataUsage">25</div>
+                            <div class="usage-label">Data (GB)</div>
+                        </div>
+                        <div class="usage-card">
+                            <div class="usage-value" id="voiceUsage">78</div>
+                            <div class="usage-label">Voice (mins)</div>
+                        </div>
+                        <div class="usage-card">
+                            <div class="usage-value" id="smsUsage">0</div>
+                            <div class="usage-label">SMS (msgs)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-label">Recent Usage:</div>
+                    <table class="usage-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Mobile (GB)</th>
+                                <th>FWA (GB)</th>
+                                <th>Fibre (GB)</th>
+                                <th>Voice (mins)</th>
+                                <th>SMS (msgs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Feb 2026</td>
+                                <td>25</td>
+                                <td>104</td>
+                                <td>0</td>
+                                <td>78</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Jan 2026</td>
+                                <td>82</td>
+                                <td>238</td>
+                                <td>0</td>
+                                <td>94</td>
+                                <td>0</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -3101,259 +3229,141 @@ app.get('/solution-builder', (c) => {
             // Builder state
             let builderData = {
                 solutionType: '',
-                name: '',
-                customerName: '',
-                contactNumber: '',
                 address: '',
-                city: '',
-                postalCode: '',
-                term: 12,
-                products: [],
-                library: []
+                customer: '',
+                products: {
+                    prepaid: '10GB',
+                    wireless: '',
+                    fibre: '',
+                    services: 'ai-tutor',
+                    security: ''
+                },
+                term: 0,
+                pricing: {
+                    setup: 799,
+                    monthly: 99
+                }
             };
             
-            let currentStep = 1;
-            
-            // Navigation
-            document.getElementById('btnBack').addEventListener('click', () => {
-                window.location.href = '/dashboard';
-            });
-            
-            // Load solution library
-            async function loadSolutionLibrary() {
-                try {
-                    const response = await fetch('/api/dashboard/data', {
-                        headers: { 'Authorization': 'Bearer ' + sessionToken }
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error('Failed to load library');
-                    }
-                    
-                    const data = await response.json();
-                    if (data.success && data.solution_library) {
-                        builderData.library = data.solution_library;
-                    }
-                } catch (error) {
-                    console.error('Load library error:', error);
-                    alert('Error loading product library');
-                }
-            }
-            
-            // Step 1: Solution Type Selection
-            document.querySelectorAll('.solution-type-card').forEach(card => {
+            // Solution type selection
+            document.querySelectorAll('.type-card').forEach(card => {
                 card.addEventListener('click', function() {
-                    document.querySelectorAll('.solution-type-card').forEach(c => c.classList.remove('selected'));
+                    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
                     this.classList.add('selected');
                     builderData.solutionType = this.dataset.type;
-                    document.getElementById('btnNext1').disabled = false;
+                    updatePricing();
                 });
             });
             
-            document.getElementById('btnNext1').addEventListener('click', () => {
-                if (builderData.solutionType) {
-                    goToStep(2);
-                }
-            });
-            
-            // Step 2: Site Details
-            document.getElementById('btnBack2').addEventListener('click', () => goToStep(1));
-            
-            document.getElementById('btnNext2').addEventListener('click', () => {
-                const form = document.getElementById('siteDetailsForm');
-                if (form.checkValidity()) {
-                    builderData.name = document.getElementById('solutionName').value;
-                    builderData.customerName = document.getElementById('customerName').value;
-                    builderData.contactNumber = document.getElementById('contactNumber').value;
-                    builderData.address = document.getElementById('siteAddress').value + ', ' +
-                                          document.getElementById('city').value + ', ' +
-                                          document.getElementById('postalCode').value;
-                    builderData.city = document.getElementById('city').value;
-                    builderData.postalCode = document.getElementById('postalCode').value;
-                    
-                    loadProducts();
-                    goToStep(3);
-                } else {
-                    form.reportValidity();
-                }
-            });
-            
-            // Step 3: Product Selection
-            document.getElementById('btnBack3').addEventListener('click', () => goToStep(2));
-            
-            document.getElementById('btnNext3').addEventListener('click', () => {
-                calculatePricing();
-                updateSummary();
-                goToStep(4);
-            });
-            
-            // Term selection
-            document.querySelectorAll('.term-option').forEach(option => {
+            // Product option selection
+            document.querySelectorAll('.option-selector').forEach(option => {
                 option.addEventListener('click', function() {
-                    document.querySelectorAll('.term-option').forEach(o => o.classList.remove('selected'));
+                    const product = this.dataset.product;
+                    const value = this.dataset.value;
+                    
+                    // Remove selection from same product group
+                    document.querySelectorAll(\`[data-product="\${product}"]\`).forEach(o => {
+                        o.classList.remove('selected');
+                    });
+                    
+                    // Select this option
                     this.classList.add('selected');
-                    builderData.term = parseInt(this.dataset.term);
-                    calculatePricing();
+                    builderData.products[product] = value;
+                    updatePricing();
                 });
             });
             
-            // Load products for selected solution type
-            function loadProducts() {
-                const productsList = document.getElementById('productsList');
-                const products = builderData.library.filter(p => p.solution === builderData.solutionType);
-                
-                if (products.length === 0) {
-                    productsList.innerHTML = '<p>No products available for this solution type.</p>';
-                    return;
-                }
-                
-                productsList.innerHTML = products.map(product => \`
-                    <div class="product-item">
-                        <div class="product-header">
-                            <div class="product-name">\${product.product}</div>
-                        </div>
-                        <div class="product-options">
-                            \${generateProductOptions(product)}
-                        </div>
-                    </div>
-                \`).join('');
-                
-                // Add event listeners to option cards
-                document.querySelectorAll('.option-card').forEach(card => {
-                    card.addEventListener('click', function() {
-                        const productId = this.dataset.product;
-                        const optionIndex = this.dataset.option;
-                        
-                        // Toggle selection within same product
-                        const siblings = this.parentElement.querySelectorAll('.option-card');
-                        siblings.forEach(s => s.classList.remove('selected'));
-                        this.classList.add('selected');
-                        
-                        // Update builderData
-                        updateProductSelection(productId, optionIndex, this.dataset.productData);
-                        calculatePricing();
-                    });
-                });
-            }
+            // Address & Customer inputs
+            document.getElementById('addressInput').addEventListener('input', (e) => {
+                builderData.address = e.target.value;
+            });
             
-            function generateProductOptions(product) {
-                const options = [];
-                
-                // Generate options based on available price points
-                if (product.option1 && product.price1) {
-                    options.push(\`
-                        <div class="option-card" data-product="\${product.id}" data-option="1" data-product-data='\${JSON.stringify({
-                            name: product.product,
-                            option: product.option1,
-                            price: product.price1,
-                            once_off: product.once_off || 0
-                        })}'>
-                            <div class="option-name">\${product.option1}</div>
-                            <div class="option-price">R \${product.price1}/month</div>
-                        </div>
-                    \`);
-                }
-                
-                if (product.option2 && product.price2) {
-                    options.push(\`
-                        <div class="option-card" data-product="\${product.id}" data-option="2" data-product-data='\${JSON.stringify({
-                            name: product.product,
-                            option: product.option2,
-                            price: product.price2,
-                            once_off: product.once_off || 0
-                        })}'>
-                            <div class="option-name">\${product.option2}</div>
-                            <div class="option-price">R \${product.price2}/month</div>
-                        </div>
-                    \`);
-                }
-                
-                if (product.option3 && product.price3) {
-                    options.push(\`
-                        <div class="option-card" data-product="\${product.id}" data-option="3" data-product-data='\${JSON.stringify({
-                            name: product.product,
-                            option: product.option3,
-                            price: product.price3,
-                            once_off: product.once_off || 0
-                        })}'>
-                            <div class="option-name">\${product.option3}</div>
-                            <div class="option-price">R \${product.price3}/month</div>
-                        </div>
-                    \`);
-                }
-                
-                return options.join('');
-            }
+            document.getElementById('customerInput').addEventListener('input', (e) => {
+                builderData.customer = e.target.value;
+            });
             
-            function updateProductSelection(productId, optionIndex, productDataStr) {
-                const productData = JSON.parse(productDataStr);
+            // Update pricing
+            function updatePricing() {
+                // Simple pricing logic - would be more complex in production
+                let monthly = 99;
+                let setup = 799;
                 
-                // Remove existing selection for this product
-                builderData.products = builderData.products.filter(p => p.productId !== productId);
+                // Add prices based on selections
+                if (builderData.products.prepaid === '5GB') monthly += 49;
+                if (builderData.products.prepaid === '10GB') monthly += 99;
+                if (builderData.products.prepaid === '25GB') monthly += 149;
                 
-                // Add new selection
-                builderData.products.push({
-                    productId,
-                    optionIndex,
-                    ...productData
-                });
-            }
-            
-            function calculatePricing() {
-                let onceOff = 0;
-                let monthly = 0;
+                if (builderData.products.wireless === '10Mbps') monthly += 249;
+                if (builderData.products.wireless === '20Mbps') monthly += 299;
+                if (builderData.products.wireless === '100Mbps') monthly += 349;
                 
-                builderData.products.forEach(p => {
-                    onceOff += p.once_off || 0;
-                    monthly += p.price || 0;
-                });
+                if (builderData.products.fibre === '50Mbps') monthly += 325;
+                if (builderData.products.fibre === '200Mbps') monthly += 425;
+                if (builderData.products.fibre === '500Mbps') monthly += 845;
                 
                 // Apply term discount
                 let discount = 0;
-                if (builderData.term === 6) discount = 5;
-                else if (builderData.term === 12) discount = 10;
-                else if (builderData.term === 24) discount = 20;
+                if (builderData.term === 6) discount = 0.05;
+                if (builderData.term === 12) discount = 0.10;
+                if (builderData.term === 24) discount = 0.20;
                 
-                const discountedMonthly = monthly * (1 - discount / 100);
+                monthly = Math.round(monthly * (1 - discount));
                 
-                builderData.pricing = {
-                    onceOff,
-                    monthlyBefore: monthly,
-                    discount,
-                    monthlyAfter: discountedMonthly
-                };
+                builderData.pricing.monthly = monthly;
+                builderData.pricing.setup = setup;
+                
+                document.getElementById('totalAmount').textContent = 'R' + monthly;
+                document.getElementById('monthlyCost').textContent = 'R' + monthly + '/month';
+                document.getElementById('setupCost').textContent = 'R' + setup;
             }
             
-            function updateSummary() {
-                document.getElementById('summaryType').textContent = builderData.solutionType;
-                document.getElementById('summaryName').textContent = builderData.name;
-                document.getElementById('summaryCustomer').textContent = builderData.customerName;
-                document.getElementById('summaryAddress').textContent = builderData.address;
-                
-                const termText = builderData.term === 0 ? 'Month-to-Month' : \`\${builderData.term} Months\`;
-                document.getElementById('summaryTerm').textContent = termText;
-                
-                // Products
-                const productsHtml = builderData.products.map(p => \`
-                    <div class="summary-row">
-                        <span class="summary-label">\${p.name} - \${p.option}</span>
-                        <span class="summary-value">R \${p.price}/month</span>
-                    </div>
-                \`).join('');
-                document.getElementById('summaryProducts').innerHTML = productsHtml;
-                
-                // Pricing
-                document.getElementById('summaryOnceOff').textContent = \`R \${builderData.pricing.onceOff.toFixed(2)}\`;
-                document.getElementById('summaryMonthlyBefore').textContent = \`R \${builderData.pricing.monthlyBefore.toFixed(2)}\`;
-                document.getElementById('summaryDiscount').textContent = \`\${builderData.pricing.discount}%\`;
-                document.getElementById('summaryTotalOnceOff').textContent = \`R \${builderData.pricing.onceOff.toFixed(2)}\`;
-                document.getElementById('summaryTotalMonthly').textContent = \`R \${builderData.pricing.monthlyAfter.toFixed(2)}\`;
-            }
+            // Modal controls
+            document.getElementById('totalAmount').addEventListener('click', () => {
+                document.getElementById('accountModal').classList.add('show');
+            });
             
-            // Step 4: Submit
-            document.getElementById('btnBack4').addEventListener('click', () => goToStep(3));
+            document.getElementById('modalClose').addEventListener('click', () => {
+                document.getElementById('accountModal').classList.remove('show');
+            });
             
-            document.getElementById('btnSubmit').addEventListener('click', async () => {
+            document.getElementById('btnCancel').addEventListener('click', () => {
+                document.getElementById('accountModal').classList.remove('show');
+            });
+            
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.getElementById('overviewTab').style.display = 'none';
+                    document.getElementById('usageTab').style.display = 'none';
+                    
+                    if (this.dataset.tab === 'overview') {
+                        document.getElementById('overviewTab').style.display = 'block';
+                    } else {
+                        document.getElementById('usageTab').style.display = 'block';
+                    }
+                });
+            });
+            
+            // Term selection
+            document.querySelectorAll('.term-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.term-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    builderData.term = parseInt(this.dataset.term);
+                    updatePricing();
+                });
+            });
+            
+            // Save solution
+            document.getElementById('btnSave').addEventListener('click', async () => {
+                if (!builderData.solutionType) {
+                    alert('Please select a solution type');
+                    return;
+                }
+                
                 try {
                     const response = await fetch('/api/solutions', {
                         method: 'POST',
@@ -3363,17 +3373,12 @@ app.get('/solution-builder', (c) => {
                         },
                         body: JSON.stringify({
                             solution_type: builderData.solutionType,
-                            name: builderData.name,
-                            address: builderData.address,
-                            customer_name: builderData.customerName,
-                            configuration: JSON.stringify({
-                                products: builderData.products,
-                                contactNumber: builderData.contactNumber,
-                                city: builderData.city,
-                                postalCode: builderData.postalCode
-                            }),
-                            price_once_off: builderData.pricing.onceOff,
-                            price_monthly: builderData.pricing.monthlyAfter,
+                            name: builderData.address || 'Unnamed Solution',
+                            address: builderData.address || '',
+                            customer_name: builderData.customer || 'Unknown Customer',
+                            configuration: JSON.stringify(builderData.products),
+                            price_once_off: builderData.pricing.setup,
+                            price_monthly: builderData.pricing.monthly,
                             term_months: builderData.term
                         })
                     });
@@ -3381,60 +3386,44 @@ app.get('/solution-builder', (c) => {
                     const data = await response.json();
                     
                     if (data.success) {
-                        alert('Solution created successfully!');
-                        window.location.href = '/dashboard';
+                        alert('Solution saved successfully!');
+                        document.getElementById('accountModal').classList.remove('show');
                     } else {
-                        alert('Failed to create solution: ' + (data.message || 'Unknown error'));
+                        alert('Failed to save solution');
                     }
                 } catch (error) {
-                    console.error('Submit error:', error);
-                    alert('Error creating solution');
+                    console.error('Save error:', error);
+                    alert('Error saving solution');
                 }
             });
             
-            // Step navigation
-            function goToStep(step) {
-                // Update current step
-                currentStep = step;
-                
-                // Hide all panels
-                document.querySelectorAll('.step-panel').forEach(panel => {
-                    panel.classList.remove('active');
-                });
-                
-                // Show target panel
-                document.getElementById(\`step\${step}\`).classList.add('active');
-                
-                // Update progress steps
-                document.querySelectorAll('.step').forEach(s => {
-                    const stepNum = parseInt(s.dataset.step);
-                    s.classList.remove('active', 'completed');
-                    
-                    if (stepNum === step) {
-                        s.classList.add('active');
-                    } else if (stepNum < step) {
-                        s.classList.add('completed');
-                        s.querySelector('.step-circle').textContent = '✓';
-                    } else {
-                        s.querySelector('.step-circle').textContent = stepNum;
-                    }
-                });
-                
-                // Update progress bar
-                const progress = ((step - 1) / 3) * 100;
-                document.getElementById('progressFill').style.width = progress + '%';
-                
-                // Scroll to top
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            // Buy/Upgrade (navigate to dashboard)
+            document.getElementById('btnBuyUpgrade').addEventListener('click', () => {
+                alert('Payment integration coming in Delivery 6!');
+            });
             
-            // Initialize
-            loadSolutionLibrary();
+            // Create Offer
+            document.getElementById('btnCreateOffer').addEventListener('click', () => {
+                alert('Offer creation coming soon!');
+            });
+            
+            // Chat functionality
+            document.getElementById('chatSend').addEventListener('click', () => {
+                const message = document.getElementById('chatInput').value;
+                if (message.trim()) {
+                    alert('LLM Chat integration coming in Delivery 7!\\nYour message: ' + message);
+                    document.getElementById('chatInput').value = '';
+                }
+            });
+            
+            // Initialize pricing
+            updatePricing();
         </script>
     </body>
     </html>
   `)
 })
+
 
 // Main route - Login page
 app.get('/', (c) => {
