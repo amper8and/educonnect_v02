@@ -2395,6 +2395,30 @@ app.get('/solution-builder', (c) => {
                 margin-bottom: 30px;
             }
             
+            .back-button {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                background: white;
+                border: 2px solid #000;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            
+            .back-button:hover {
+                background: #FFCB00;
+                transform: translateX(-4px);
+            }
+            
+            .back-button svg {
+                width: 20px;
+                height: 20px;
+            }
+            
             .logo-title {
                 display: flex;
                 align-items: center;
@@ -2901,6 +2925,21 @@ app.get('/solution-builder', (c) => {
             
             /* Responsive */
             @media (max-width: 768px) {
+                .header {
+                    flex-wrap: wrap;
+                    gap: 15px;
+                }
+                
+                .back-button {
+                    order: -1;
+                    width: 100%;
+                    justify-content: center;
+                }
+                
+                .back-button span {
+                    display: inline;
+                }
+                
                 .types-grid {
                     grid-template-columns: repeat(2, 1fr);
                 }
@@ -2916,12 +2955,24 @@ app.get('/solution-builder', (c) => {
                 .term-options {
                     grid-template-columns: repeat(2, 1fr);
                 }
+                
+                .total-amount {
+                    width: 60px;
+                    height: 60px;
+                    font-size: 1.2rem;
+                }
             }
         </style>
     </head>
     <body>
         <!-- Header -->
         <div class="header">
+            <button class="back-button" id="backToDashboard" title="Back to Dashboard">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                <span>Dashboard</span>
+            </button>
             <div class="logo-title">
                 <div class="logo">EduConnect</div>
                 <div class="title">Solution Builder</div>
@@ -3233,6 +3284,13 @@ app.get('/solution-builder', (c) => {
             if (!sessionToken) {
                 window.location.href = '/';
             }
+            
+            // Back to Dashboard button
+            document.getElementById('backToDashboard').addEventListener('click', () => {
+                if (confirm('Are you sure you want to leave? Any unsaved changes will be lost.')) {
+                    window.location.href = '/dashboard';
+                }
+            });
             
             // Builder state
             let builderData = {
