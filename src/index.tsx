@@ -1564,8 +1564,7 @@ app.get('/dashboard', (c) => {
         });
         
         document.getElementById('btnCreateSolution').addEventListener('click', () => {
-            // TODO: Navigate to solution builder (Delivery 5)
-            alert('Solution builder coming in Delivery 5!');
+            window.location.href = '/solution-builder';
         });
         
         document.getElementById('btnCompleteKYC').addEventListener('click', () => {
@@ -2349,6 +2348,1091 @@ app.get('/dashboard', (c) => {
     </script>
 </body>
 </html>
+  `)
+})
+
+// Solution Builder route
+app.get('/solution-builder', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Solution Builder - MTN EduConnect</title>
+        <style>
+            @font-face {
+                font-family: 'MTN Brighter Sans';
+                src: url('/fonts/MTN_Brighter_Sans_Regular.ttf') format('truetype');
+                font-weight: 400;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'MTN Brighter Sans';
+                src: url('/fonts/MTN_Brighter_Sans_Light.ttf') format('truetype');
+                font-weight: 300;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'MTN Brighter Sans';
+                src: url('/fonts/MTN_Brighter_Sans_Bold.ttf') format('truetype');
+                font-weight: 700;
+                font-style: normal;
+            }
+            
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'MTN Brighter Sans', sans-serif;
+                background: #f5f5f5;
+            }
+            
+            /* Header */
+            .builder-header {
+                background: white;
+                padding: 1.5rem 2rem;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
+            }
+            
+            .logo {
+                height: 40px;
+            }
+            
+            .builder-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #000;
+            }
+            
+            .btn-back {
+                padding: 0.75rem 1.5rem;
+                background: white;
+                border: 2px solid #000;
+                border-radius: 8px;
+                font-family: 'MTN Brighter Sans', sans-serif;
+                font-weight: 600;
+                color: #000;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+            
+            .btn-back:hover {
+                background: #f5f5f5;
+            }
+            
+            /* Progress Steps */
+            .progress-container {
+                background: white;
+                padding: 2rem;
+                margin: 2rem auto;
+                max-width: 1200px;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            
+            .progress-steps {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: relative;
+                margin-bottom: 2rem;
+            }
+            
+            .progress-line {
+                position: absolute;
+                top: 20px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: #e0e0e0;
+                z-index: 0;
+            }
+            
+            .progress-line-fill {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                background: #FFCB00;
+                transition: width 0.3s;
+            }
+            
+            .step {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                position: relative;
+                z-index: 1;
+                flex: 1;
+            }
+            
+            .step-circle {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: white;
+                border: 3px solid #e0e0e0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                color: #999;
+                transition: all 0.3s;
+            }
+            
+            .step.active .step-circle {
+                border-color: #FFCB00;
+                background: #FFCB00;
+                color: #000;
+            }
+            
+            .step.completed .step-circle {
+                border-color: #00C853;
+                background: #00C853;
+                color: white;
+            }
+            
+            .step-label {
+                margin-top: 0.5rem;
+                font-size: 0.875rem;
+                color: #666;
+                text-align: center;
+            }
+            
+            .step.active .step-label {
+                color: #000;
+                font-weight: 600;
+            }
+            
+            /* Step Content */
+            .step-content {
+                background: white;
+                padding: 2rem;
+                margin: 0 auto 2rem;
+                max-width: 1200px;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            
+            .step-panel {
+                display: none;
+            }
+            
+            .step-panel.active {
+                display: block;
+            }
+            
+            .step-heading {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #000;
+                margin-bottom: 1.5rem;
+            }
+            
+            /* Solution Type Selection */
+            .solution-types {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+            
+            .solution-type-card {
+                background: white;
+                border: 3px solid #e0e0e0;
+                border-radius: 12px;
+                padding: 2rem;
+                cursor: pointer;
+                transition: all 0.3s;
+                text-align: center;
+            }
+            
+            .solution-type-card:hover {
+                border-color: #FFCB00;
+                transform: translateY(-4px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            .solution-type-card.selected {
+                border-color: #FFCB00;
+                background: #FFFEF5;
+            }
+            
+            .solution-icon {
+                width: 80px;
+                height: 80px;
+                margin: 0 auto 1rem;
+                background: #FFCB00;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.5rem;
+            }
+            
+            .solution-name {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #000;
+                margin-bottom: 0.5rem;
+            }
+            
+            .solution-desc {
+                font-size: 0.875rem;
+                color: #666;
+            }
+            
+            /* Form Fields */
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+            
+            .form-label {
+                display: block;
+                font-weight: 600;
+                color: #000;
+                margin-bottom: 0.5rem;
+            }
+            
+            .form-input {
+                width: 100%;
+                padding: 0.75rem;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-family: 'MTN Brighter Sans', sans-serif;
+                font-size: 1rem;
+                transition: border-color 0.3s;
+            }
+            
+            .form-input:focus {
+                outline: none;
+                border-color: #FFCB00;
+            }
+            
+            .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+            
+            /* Product Selection */
+            .products-list {
+                margin-bottom: 2rem;
+            }
+            
+            .product-item {
+                background: #f9f9f9;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+                transition: all 0.3s;
+            }
+            
+            .product-item:hover {
+                border-color: #FFCB00;
+            }
+            
+            .product-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+            
+            .product-name {
+                font-size: 1.125rem;
+                font-weight: 700;
+                color: #000;
+            }
+            
+            .product-options {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+            
+            .option-card {
+                background: white;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 1rem;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+            
+            .option-card:hover {
+                border-color: #FFCB00;
+            }
+            
+            .option-card.selected {
+                border-color: #FFCB00;
+                background: #FFFEF5;
+            }
+            
+            .option-name {
+                font-weight: 600;
+                color: #000;
+                margin-bottom: 0.5rem;
+            }
+            
+            .option-price {
+                font-size: 1.125rem;
+                font-weight: 700;
+                color: #FFCB00;
+            }
+            
+            /* Summary */
+            .summary-section {
+                background: #f9f9f9;
+                border-radius: 8px;
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .summary-title {
+                font-size: 1.125rem;
+                font-weight: 700;
+                color: #000;
+                margin-bottom: 1rem;
+            }
+            
+            .summary-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.75rem 0;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .summary-row:last-child {
+                border-bottom: none;
+            }
+            
+            .summary-label {
+                color: #666;
+            }
+            
+            .summary-value {
+                font-weight: 600;
+                color: #000;
+            }
+            
+            .summary-total {
+                background: #FFCB00;
+                padding: 1rem;
+                border-radius: 8px;
+                margin-top: 1rem;
+            }
+            
+            .summary-total .summary-row {
+                border-bottom: none;
+                padding: 0.5rem 0;
+            }
+            
+            .summary-total .summary-label,
+            .summary-total .summary-value {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #000;
+            }
+            
+            /* Buttons */
+            .button-group {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 2rem;
+            }
+            
+            .btn {
+                padding: 0.75rem 2rem;
+                border: none;
+                border-radius: 8px;
+                font-family: 'MTN Brighter Sans', sans-serif;
+                font-weight: 600;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+            
+            .btn-primary {
+                background: #FFCB00;
+                color: #000;
+            }
+            
+            .btn-primary:hover {
+                background: #E6B800;
+            }
+            
+            .btn-secondary {
+                background: white;
+                color: #000;
+                border: 2px solid #000;
+            }
+            
+            .btn-secondary:hover {
+                background: #f5f5f5;
+            }
+            
+            .btn:disabled {
+                background: #e0e0e0;
+                color: #999;
+                cursor: not-allowed;
+            }
+            
+            /* Term Selection */
+            .term-selector {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .term-option {
+                background: white;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 1rem;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+            
+            .term-option:hover {
+                border-color: #FFCB00;
+            }
+            
+            .term-option.selected {
+                border-color: #FFCB00;
+                background: #FFFEF5;
+            }
+            
+            .term-months {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #000;
+                margin-bottom: 0.25rem;
+            }
+            
+            .term-discount {
+                font-size: 0.875rem;
+                color: #00C853;
+                font-weight: 600;
+            }
+            
+            /* Responsive */
+            @media (max-width: 768px) {
+                .builder-header {
+                    padding: 1rem;
+                    flex-direction: column;
+                    gap: 1rem;
+                }
+                
+                .header-left {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+                
+                .builder-title {
+                    font-size: 1.25rem;
+                }
+                
+                .progress-container,
+                .step-content {
+                    margin: 1rem;
+                    padding: 1rem;
+                }
+                
+                .solution-types {
+                    grid-template-columns: 1fr;
+                }
+                
+                .form-row {
+                    grid-template-columns: 1fr;
+                }
+                
+                .term-selector {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                
+                .button-group {
+                    flex-direction: column;
+                    gap: 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Header -->
+        <div class="builder-header">
+            <div class="header-left">
+                <div class="logo">📱</div>
+                <h1 class="builder-title">Solution Builder</h1>
+            </div>
+            <button class="btn-back" id="btnBack">← Back to Dashboard</button>
+        </div>
+        
+        <!-- Progress Steps -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line">
+                    <div class="progress-line-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Solution Type</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Site Details</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Products</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Summary</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step Content -->
+        <div class="step-content">
+            <!-- Step 1: Solution Type -->
+            <div class="step-panel active" id="step1">
+                <h2 class="step-heading">Select Solution Type</h2>
+                <div class="solution-types">
+                    <div class="solution-type-card" data-type="EduStudent">
+                        <div class="solution-icon">📚</div>
+                        <div class="solution-name">EduStudent</div>
+                        <div class="solution-desc">Student-focused connectivity solutions</div>
+                    </div>
+                    <div class="solution-type-card" data-type="EduFlex">
+                        <div class="solution-icon">📍</div>
+                        <div class="solution-name">EduFlex</div>
+                        <div class="solution-desc">Flexible wireless connectivity</div>
+                    </div>
+                    <div class="solution-type-card" data-type="EduSchool">
+                        <div class="solution-icon">🏫</div>
+                        <div class="solution-name">EduSchool</div>
+                        <div class="solution-desc">Complete school connectivity</div>
+                    </div>
+                    <div class="solution-type-card" data-type="EduSafe">
+                        <div class="solution-icon">🛡️</div>
+                        <div class="solution-name">EduSafe</div>
+                        <div class="solution-desc">Safety and security solutions</div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <div></div>
+                    <button class="btn btn-primary" id="btnNext1" disabled>Next Step →</button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Site Details -->
+            <div class="step-panel" id="step2">
+                <h2 class="step-heading">Site Details</h2>
+                <form id="siteDetailsForm">
+                    <div class="form-group">
+                        <label class="form-label">Solution Name</label>
+                        <input type="text" class="form-input" id="solutionName" placeholder="e.g., Springfield High School" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Customer Name</label>
+                            <input type="text" class="form-input" id="customerName" placeholder="Enter customer name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Number</label>
+                            <input type="tel" class="form-input" id="contactNumber" placeholder="e.g., +27821234567" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Site Address</label>
+                        <input type="text" class="form-input" id="siteAddress" placeholder="Full physical address" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">City</label>
+                            <input type="text" class="form-input" id="city" placeholder="City" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Postal Code</label>
+                            <input type="text" class="form-input" id="postalCode" placeholder="Postal code" required>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="btnBack2">← Previous</button>
+                    <button class="btn btn-primary" id="btnNext2">Next Step →</button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Product Selection -->
+            <div class="step-panel" id="step3">
+                <h2 class="step-heading">Select Products</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Contract Term</label>
+                    <div class="term-selector">
+                        <div class="term-option" data-term="0">
+                            <div class="term-months">Month-to-Month</div>
+                            <div class="term-discount">No discount</div>
+                        </div>
+                        <div class="term-option" data-term="6">
+                            <div class="term-months">6 Months</div>
+                            <div class="term-discount">5% off</div>
+                        </div>
+                        <div class="term-option selected" data-term="12">
+                            <div class="term-months">12 Months</div>
+                            <div class="term-discount">10% off</div>
+                        </div>
+                        <div class="term-option" data-term="24">
+                            <div class="term-months">24 Months</div>
+                            <div class="term-discount">20% off</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="products-list" id="productsList">
+                    <!-- Products will be loaded dynamically -->
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="btnBack3">← Previous</button>
+                    <button class="btn btn-primary" id="btnNext3">Review Summary →</button>
+                </div>
+            </div>
+            
+            <!-- Step 4: Summary -->
+            <div class="step-panel" id="step4">
+                <h2 class="step-heading">Solution Summary</h2>
+                
+                <div class="summary-section">
+                    <div class="summary-title">Solution Details</div>
+                    <div class="summary-row">
+                        <span class="summary-label">Type:</span>
+                        <span class="summary-value" id="summaryType">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Name:</span>
+                        <span class="summary-value" id="summaryName">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Customer:</span>
+                        <span class="summary-value" id="summaryCustomer">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Address:</span>
+                        <span class="summary-value" id="summaryAddress">-</span>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-title">Selected Products</div>
+                    <div id="summaryProducts">
+                        <!-- Products will be listed here -->
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-title">Pricing</div>
+                    <div class="summary-row">
+                        <span class="summary-label">Contract Term:</span>
+                        <span class="summary-value" id="summaryTerm">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Once-off Fee:</span>
+                        <span class="summary-value" id="summaryOnceOff">R 0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Monthly Fee (before discount):</span>
+                        <span class="summary-value" id="summaryMonthlyBefore">R 0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Discount:</span>
+                        <span class="summary-value" id="summaryDiscount">0%</span>
+                    </div>
+                    
+                    <div class="summary-total">
+                        <div class="summary-row">
+                            <span class="summary-label">Once-off Total:</span>
+                            <span class="summary-value" id="summaryTotalOnceOff">R 0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Monthly Total:</span>
+                            <span class="summary-value" id="summaryTotalMonthly">R 0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="btnBack4">← Previous</button>
+                    <button class="btn btn-primary" id="btnSubmit">Create Solution</button>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // Check session
+            const sessionToken = localStorage.getItem('educonnect_session');
+            if (!sessionToken) {
+                window.location.href = '/';
+            }
+            
+            // Builder state
+            let builderData = {
+                solutionType: '',
+                name: '',
+                customerName: '',
+                contactNumber: '',
+                address: '',
+                city: '',
+                postalCode: '',
+                term: 12,
+                products: [],
+                library: []
+            };
+            
+            let currentStep = 1;
+            
+            // Navigation
+            document.getElementById('btnBack').addEventListener('click', () => {
+                window.location.href = '/dashboard';
+            });
+            
+            // Load solution library
+            async function loadSolutionLibrary() {
+                try {
+                    const response = await fetch('/api/dashboard/data', {
+                        headers: { 'Authorization': 'Bearer ' + sessionToken }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to load library');
+                    }
+                    
+                    const data = await response.json();
+                    if (data.success && data.solution_library) {
+                        builderData.library = data.solution_library;
+                    }
+                } catch (error) {
+                    console.error('Load library error:', error);
+                    alert('Error loading product library');
+                }
+            }
+            
+            // Step 1: Solution Type Selection
+            document.querySelectorAll('.solution-type-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.solution-type-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    builderData.solutionType = this.dataset.type;
+                    document.getElementById('btnNext1').disabled = false;
+                });
+            });
+            
+            document.getElementById('btnNext1').addEventListener('click', () => {
+                if (builderData.solutionType) {
+                    goToStep(2);
+                }
+            });
+            
+            // Step 2: Site Details
+            document.getElementById('btnBack2').addEventListener('click', () => goToStep(1));
+            
+            document.getElementById('btnNext2').addEventListener('click', () => {
+                const form = document.getElementById('siteDetailsForm');
+                if (form.checkValidity()) {
+                    builderData.name = document.getElementById('solutionName').value;
+                    builderData.customerName = document.getElementById('customerName').value;
+                    builderData.contactNumber = document.getElementById('contactNumber').value;
+                    builderData.address = document.getElementById('siteAddress').value + ', ' +
+                                          document.getElementById('city').value + ', ' +
+                                          document.getElementById('postalCode').value;
+                    builderData.city = document.getElementById('city').value;
+                    builderData.postalCode = document.getElementById('postalCode').value;
+                    
+                    loadProducts();
+                    goToStep(3);
+                } else {
+                    form.reportValidity();
+                }
+            });
+            
+            // Step 3: Product Selection
+            document.getElementById('btnBack3').addEventListener('click', () => goToStep(2));
+            
+            document.getElementById('btnNext3').addEventListener('click', () => {
+                calculatePricing();
+                updateSummary();
+                goToStep(4);
+            });
+            
+            // Term selection
+            document.querySelectorAll('.term-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.term-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    builderData.term = parseInt(this.dataset.term);
+                    calculatePricing();
+                });
+            });
+            
+            // Load products for selected solution type
+            function loadProducts() {
+                const productsList = document.getElementById('productsList');
+                const products = builderData.library.filter(p => p.solution === builderData.solutionType);
+                
+                if (products.length === 0) {
+                    productsList.innerHTML = '<p>No products available for this solution type.</p>';
+                    return;
+                }
+                
+                productsList.innerHTML = products.map(product => \`
+                    <div class="product-item">
+                        <div class="product-header">
+                            <div class="product-name">\${product.product}</div>
+                        </div>
+                        <div class="product-options">
+                            \${generateProductOptions(product)}
+                        </div>
+                    </div>
+                \`).join('');
+                
+                // Add event listeners to option cards
+                document.querySelectorAll('.option-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const productId = this.dataset.product;
+                        const optionIndex = this.dataset.option;
+                        
+                        // Toggle selection within same product
+                        const siblings = this.parentElement.querySelectorAll('.option-card');
+                        siblings.forEach(s => s.classList.remove('selected'));
+                        this.classList.add('selected');
+                        
+                        // Update builderData
+                        updateProductSelection(productId, optionIndex, this.dataset.productData);
+                        calculatePricing();
+                    });
+                });
+            }
+            
+            function generateProductOptions(product) {
+                const options = [];
+                
+                // Generate options based on available price points
+                if (product.option1 && product.price1) {
+                    options.push(\`
+                        <div class="option-card" data-product="\${product.id}" data-option="1" data-product-data='\${JSON.stringify({
+                            name: product.product,
+                            option: product.option1,
+                            price: product.price1,
+                            once_off: product.once_off || 0
+                        })}'>
+                            <div class="option-name">\${product.option1}</div>
+                            <div class="option-price">R \${product.price1}/month</div>
+                        </div>
+                    \`);
+                }
+                
+                if (product.option2 && product.price2) {
+                    options.push(\`
+                        <div class="option-card" data-product="\${product.id}" data-option="2" data-product-data='\${JSON.stringify({
+                            name: product.product,
+                            option: product.option2,
+                            price: product.price2,
+                            once_off: product.once_off || 0
+                        })}'>
+                            <div class="option-name">\${product.option2}</div>
+                            <div class="option-price">R \${product.price2}/month</div>
+                        </div>
+                    \`);
+                }
+                
+                if (product.option3 && product.price3) {
+                    options.push(\`
+                        <div class="option-card" data-product="\${product.id}" data-option="3" data-product-data='\${JSON.stringify({
+                            name: product.product,
+                            option: product.option3,
+                            price: product.price3,
+                            once_off: product.once_off || 0
+                        })}'>
+                            <div class="option-name">\${product.option3}</div>
+                            <div class="option-price">R \${product.price3}/month</div>
+                        </div>
+                    \`);
+                }
+                
+                return options.join('');
+            }
+            
+            function updateProductSelection(productId, optionIndex, productDataStr) {
+                const productData = JSON.parse(productDataStr);
+                
+                // Remove existing selection for this product
+                builderData.products = builderData.products.filter(p => p.productId !== productId);
+                
+                // Add new selection
+                builderData.products.push({
+                    productId,
+                    optionIndex,
+                    ...productData
+                });
+            }
+            
+            function calculatePricing() {
+                let onceOff = 0;
+                let monthly = 0;
+                
+                builderData.products.forEach(p => {
+                    onceOff += p.once_off || 0;
+                    monthly += p.price || 0;
+                });
+                
+                // Apply term discount
+                let discount = 0;
+                if (builderData.term === 6) discount = 5;
+                else if (builderData.term === 12) discount = 10;
+                else if (builderData.term === 24) discount = 20;
+                
+                const discountedMonthly = monthly * (1 - discount / 100);
+                
+                builderData.pricing = {
+                    onceOff,
+                    monthlyBefore: monthly,
+                    discount,
+                    monthlyAfter: discountedMonthly
+                };
+            }
+            
+            function updateSummary() {
+                document.getElementById('summaryType').textContent = builderData.solutionType;
+                document.getElementById('summaryName').textContent = builderData.name;
+                document.getElementById('summaryCustomer').textContent = builderData.customerName;
+                document.getElementById('summaryAddress').textContent = builderData.address;
+                
+                const termText = builderData.term === 0 ? 'Month-to-Month' : \`\${builderData.term} Months\`;
+                document.getElementById('summaryTerm').textContent = termText;
+                
+                // Products
+                const productsHtml = builderData.products.map(p => \`
+                    <div class="summary-row">
+                        <span class="summary-label">\${p.name} - \${p.option}</span>
+                        <span class="summary-value">R \${p.price}/month</span>
+                    </div>
+                \`).join('');
+                document.getElementById('summaryProducts').innerHTML = productsHtml;
+                
+                // Pricing
+                document.getElementById('summaryOnceOff').textContent = \`R \${builderData.pricing.onceOff.toFixed(2)}\`;
+                document.getElementById('summaryMonthlyBefore').textContent = \`R \${builderData.pricing.monthlyBefore.toFixed(2)}\`;
+                document.getElementById('summaryDiscount').textContent = \`\${builderData.pricing.discount}%\`;
+                document.getElementById('summaryTotalOnceOff').textContent = \`R \${builderData.pricing.onceOff.toFixed(2)}\`;
+                document.getElementById('summaryTotalMonthly').textContent = \`R \${builderData.pricing.monthlyAfter.toFixed(2)}\`;
+            }
+            
+            // Step 4: Submit
+            document.getElementById('btnBack4').addEventListener('click', () => goToStep(3));
+            
+            document.getElementById('btnSubmit').addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/solutions', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + sessionToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            solution_type: builderData.solutionType,
+                            name: builderData.name,
+                            address: builderData.address,
+                            customer_name: builderData.customerName,
+                            configuration: JSON.stringify({
+                                products: builderData.products,
+                                contactNumber: builderData.contactNumber,
+                                city: builderData.city,
+                                postalCode: builderData.postalCode
+                            }),
+                            price_once_off: builderData.pricing.onceOff,
+                            price_monthly: builderData.pricing.monthlyAfter,
+                            term_months: builderData.term
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert('Solution created successfully!');
+                        window.location.href = '/dashboard';
+                    } else {
+                        alert('Failed to create solution: ' + (data.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Submit error:', error);
+                    alert('Error creating solution');
+                }
+            });
+            
+            // Step navigation
+            function goToStep(step) {
+                // Update current step
+                currentStep = step;
+                
+                // Hide all panels
+                document.querySelectorAll('.step-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                
+                // Show target panel
+                document.getElementById(\`step\${step}\`).classList.add('active');
+                
+                // Update progress steps
+                document.querySelectorAll('.step').forEach(s => {
+                    const stepNum = parseInt(s.dataset.step);
+                    s.classList.remove('active', 'completed');
+                    
+                    if (stepNum === step) {
+                        s.classList.add('active');
+                    } else if (stepNum < step) {
+                        s.classList.add('completed');
+                        s.querySelector('.step-circle').textContent = '✓';
+                    } else {
+                        s.querySelector('.step-circle').textContent = stepNum;
+                    }
+                });
+                
+                // Update progress bar
+                const progress = ((step - 1) / 3) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            // Initialize
+            loadSolutionLibrary();
+        </script>
+    </body>
+    </html>
   `)
 })
 
