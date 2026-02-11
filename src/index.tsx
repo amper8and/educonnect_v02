@@ -6,6 +6,7 @@ import solutions from './routes/solutions'
 import kyc from './routes/kyc'
 import dashboard from './routes/dashboard'
 import admin from './routes/admin'
+import orders from './routes/orders'
 
 type Bindings = {
   DB: D1Database
@@ -27,6 +28,7 @@ app.route('/api/solutions', solutions)
 app.route('/api/kyc', kyc)
 app.route('/api/dashboard', dashboard)
 app.route('/api/admin', admin)
+app.route('/api/orders', orders)
 
 // Health check
 app.get('/api/health', (c) => {
@@ -1572,8 +1574,8 @@ app.get('/dashboard', (c) => {
         });
         
         function viewSolution(id) {
-            // TODO: View solution details (Delivery 5)
-            alert(\`Viewing solution \${id} - Details coming in Delivery 5!\`);
+            // Navigate to solution builder with solution ID for editing
+            window.location.href = \`/solution-builder?id=\${id}\`;
         }
         
         // KYC Modal Logic
@@ -3403,9 +3405,92 @@ app.get('/solution-builder', (c) => {
                 }
             });
             
-            // Buy/Upgrade (navigate to dashboard)
-            document.getElementById('btnBuyUpgrade').addEventListener('click', () => {
-                alert('Payment integration coming in Delivery 6!');
+            // Buy/Upgrade - Create order and process payment (Demo mode)
+            document.getElementById('btnBuyUpgrade').addEventListener('click', async () => {
+                if (!builderData.solutionType) {
+                    alert('Please select a solution type first');
+                    return;
+                }
+                
+                try {
+                    // First, save the solution if not already saved
+                    const solutionResponse = await fetch('/api/solutions', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + sessionToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            solution_type: builderData.solutionType,
+                            name: builderData.address || 'Unnamed Solution',
+                            address: builderData.address || '',
+                            customer_name: builderData.customer || 'Unknown Customer',
+                            configuration: JSON.stringify(builderData.products),
+                            price_once_off: builderData.pricing.setup,
+                            price_monthly: builderData.pricing.monthly,
+                            term_months: builderData.term
+                        })
+                    });
+                    
+                    const solutionData = await solutionResponse.json();
+                    
+                    if (!solutionData.success) {
+                        alert('Failed to save solution');
+                        return;
+                    }
+                    
+                    const solution_id = solutionData.solution_id;
+                    
+                    // Create order
+                    const orderResponse = await fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + sessionToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            solution_id,
+                            payment_method: 'mobile_money', // Demo: default payment method
+                            amount_once_off: builderData.pricing.setup,
+                            amount_monthly: builderData.pricing.monthly
+                        })
+                    });
+                    
+                    const orderData = await orderResponse.json();
+                    
+                    if (!orderData.success) {
+                        alert('Failed to create order');
+                        return;
+                    }
+                    
+                    const order_id = orderData.order_id;
+                    const order_number = orderData.order_number;
+                    
+                    // Process payment (Demo mode - auto-approve)
+                    const paymentResponse = await fetch(\`/api/orders/\${order_id}/payment\`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + sessionToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            payment_method: 'mobile_money'
+                        })
+                    });
+                    
+                    const paymentData = await paymentResponse.json();
+                    
+                    if (paymentData.success) {
+                        alert(\`🎉 Payment Successful!\\n\\nOrder Number: \${order_number}\\nSetup: R\${builderData.pricing.setup.toFixed(2)}\\nMonthly: R\${builderData.pricing.monthly.toFixed(2)}/month\\n\\n(Demo Mode - Payment auto-approved)\`);
+                        document.getElementById('accountModal').classList.remove('show');
+                        window.location.href = '/dashboard';
+                    } else {
+                        alert('Payment processing failed');
+                    }
+                } catch (error) {
+                    console.error('Buy/Upgrade error:', error);
+                    alert('Error processing order');
+                }
             });
             
             // Create Offer
