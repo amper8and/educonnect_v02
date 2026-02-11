@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "educonnect-v2",
+  "name": "educonnect-v2-staging",
   "compatibility_date": "2024-01-01",
   "pages_build_output_dir": "./dist",
   "compatibility_flags": ["nodejs_compat"],
@@ -8,7 +8,7 @@
     {
       "binding": "DB",
       "database_name": "educonnect-staging",
-      "database_id": "local"
+      "database_id": "6fd55c8b-e491-416d-ba46-cd4ff1a99df8"
     }
   ]
 }
