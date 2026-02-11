@@ -5,6 +5,7 @@ import auth from './routes/auth'
 import solutions from './routes/solutions'
 import kyc from './routes/kyc'
 import dashboard from './routes/dashboard'
+import admin from './routes/admin'
 
 type Bindings = {
   DB: D1Database
@@ -25,6 +26,7 @@ app.route('/api/auth', auth)
 app.route('/api/solutions', solutions)
 app.route('/api/kyc', kyc)
 app.route('/api/dashboard', dashboard)
+app.route('/api/admin', admin)
 
 // Health check
 app.get('/api/health', (c) => {
@@ -652,6 +654,404 @@ app.get('/dashboard', (c) => {
             background: #e0e0e0;
         }
         
+        /* Profile Modal */
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .profile-modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .profile-modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .profile-modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .profile-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .profile-close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #999;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-close-btn:hover {
+            color: #000;
+        }
+        
+        .profile-modal-body {
+            padding: 2rem;
+        }
+        
+        .profile-section {
+            margin-bottom: 2rem;
+        }
+        
+        .profile-section h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 1rem;
+        }
+        
+        .profile-info-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .admin-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .btn-admin {
+            padding: 1rem;
+            background: #FFCB00;
+            border: none;
+            border-radius: 8px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 700;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-admin:hover {
+            background: #E6B800;
+            transform: translateY(-2px);
+        }
+        
+        .btn-icon {
+            font-size: 1.5rem;
+        }
+        
+        .profile-modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn-logout {
+            padding: 0.875rem 1.5rem;
+            background: #f44336;
+            border: none;
+            border-radius: 6px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-logout:hover {
+            background: #d32f2f;
+        }
+        
+        /* Admin Modals */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 3000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .admin-modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .admin-modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 1000px;
+            width: 100%;
+            margin: 2rem auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .admin-modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .admin-close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #999;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .admin-close-btn:hover {
+            color: #000;
+        }
+        
+        .admin-modal-body {
+            padding: 2rem;
+        }
+        
+        .admin-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .import-export-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-import, .btn-export {
+            padding: 0.75rem 1.5rem;
+            background: #4caf50;
+            border: none;
+            border-radius: 6px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-import:hover, .btn-export:hover {
+            background: #45a049;
+        }
+        
+        .btn-export {
+            background: #2196f3;
+        }
+        
+        .btn-export:hover {
+            background: #1976d2;
+        }
+        
+        .btn-add {
+            padding: 0.75rem 1.5rem;
+            background: #FFCB00;
+            border: none;
+            border-radius: 6px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 700;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-add:hover {
+            background: #E6B800;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .admin-table thead {
+            background: #f5f5f5;
+        }
+        
+        .admin-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: #000;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .admin-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+        
+        .admin-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .loading-row {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+        }
+        
+        .btn-delete {
+            padding: 0.5rem 1rem;
+            background: #f44336;
+            border: none;
+            border-radius: 4px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .btn-delete:hover {
+            background: #d32f2f;
+        }
+        
+        .btn-edit {
+            padding: 0.5rem 1rem;
+            background: #2196f3;
+            border: none;
+            border-radius: 4px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+        
+        .btn-edit:hover {
+            background: #1976d2;
+        }
+        
+        .admin-modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .role-badge.role-admin {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .role-badge.role-account {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .role-badge.role-customer {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+        
+        .error-row {
+            text-align: center;
+            color: #f44336;
+            font-style: italic;
+            padding: 2rem !important;
+        }
+        
+        .empty-row {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 2rem !important;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .dashboard-header {
@@ -894,6 +1294,152 @@ app.get('/dashboard', (c) => {
         </div>
     </div>
     
+    <!-- Profile Modal -->
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-modal-content">
+            <div class="profile-modal-header">
+                <h2 class="profile-modal-title">Profile Settings</h2>
+                <button class="profile-close-btn" id="profileCloseBtn">&times;</button>
+            </div>
+            
+            <div class="profile-modal-body">
+                <div class="profile-section">
+                    <h3>Personal Information</h3>
+                    <div class="profile-info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Name:</span>
+                            <span class="info-value" id="profileName">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value" id="profilePhone">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" id="profileEmail">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Role:</span>
+                            <span class="info-value" id="profileRole">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">KYC Status:</span>
+                            <span class="info-value" id="profileKYC">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-section" id="adminSection" style="display: none;">
+                    <h3>Admin Tools</h3>
+                    <div class="admin-buttons">
+                        <button class="btn-admin" id="btnManageWhitelist">
+                            <span class="btn-icon">👥</span>
+                            Manage Whitelist
+                        </button>
+                        <button class="btn-admin" id="btnManageLibrary">
+                            <span class="btn-icon">📚</span>
+                            Manage Solution Library
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-modal-footer">
+                <button class="btn-secondary" id="profileCloseBtn2">Close</button>
+                <button class="btn-logout" id="btnLogout">Logout</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Whitelist Admin Modal -->
+    <div class="admin-modal" id="whitelistModal">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h2 class="admin-modal-title">Manage Whitelist</h2>
+                <button class="admin-close-btn" id="whitelistCloseBtn">&times;</button>
+            </div>
+            
+            <div class="admin-modal-body">
+                <div class="admin-actions">
+                    <div class="import-export-group">
+                        <label class="btn-import">
+                            <input type="file" id="whitelistImport" accept=".csv" style="display: none;">
+                            📥 Import CSV
+                        </label>
+                        <button class="btn-export" id="whitelistExport">📤 Export CSV</button>
+                    </div>
+                    <button class="btn-add" id="btnAddWhitelist">+ Add Entry</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Added</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="whitelistTableBody">
+                            <tr><td colspan="5" class="loading-row">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="admin-modal-footer">
+                <button class="btn-secondary" id="whitelistCloseBtn2">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Solution Library Admin Modal -->
+    <div class="admin-modal" id="libraryModal">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h2 class="admin-modal-title">Manage Solution Library</h2>
+                <button class="admin-close-btn" id="libraryCloseBtn">&times;</button>
+            </div>
+            
+            <div class="admin-modal-body">
+                <div class="admin-actions">
+                    <div class="import-export-group">
+                        <label class="btn-import">
+                            <input type="file" id="libraryImport" accept=".csv" style="display: none;">
+                            📥 Import CSV
+                        </label>
+                        <button class="btn-export" id="libraryExport">📤 Export CSV</button>
+                    </div>
+                    <button class="btn-add" id="btnAddLibrary">+ Add Product</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Solution</th>
+                                <th>Product</th>
+                                <th>Price Range</th>
+                                <th>Once-off</th>
+                                <th>Monthly</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="libraryTableBody">
+                            <tr><td colspan="6" class="loading-row">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="admin-modal-footer">
+                <button class="btn-secondary" id="libraryCloseBtn2">Close</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
         // Get session info
         const sessionToken = localStorage.getItem('educonnect_session');
@@ -1014,8 +1560,7 @@ app.get('/dashboard', (c) => {
         
         // Event handlers
         document.getElementById('profileIcon').addEventListener('click', () => {
-            // TODO: Show profile modal (Delivery 4)
-            alert('Profile settings coming soon!');
+            openProfileModal();
         });
         
         document.getElementById('btnCreateSolution').addEventListener('click', () => {
@@ -1355,6 +1900,448 @@ app.get('/dashboard', (c) => {
                 kycSubmitBtn.disabled = false;
                 kycSubmitBtn.textContent = 'Submit KYC';
             }
+        });
+        
+        // Profile Modal Logic
+        const profileModal = document.getElementById('profileModal');
+        const profileCloseBtn = document.getElementById('profileCloseBtn');
+        const profileCloseBtn2 = document.getElementById('profileCloseBtn2');
+        const btnLogout = document.getElementById('btnLogout');
+        const btnManageWhitelist = document.getElementById('btnManageWhitelist');
+        const btnManageLibrary = document.getElementById('btnManageLibrary');
+        const adminSection = document.getElementById('adminSection');
+        
+        function openProfileModal() {
+            // Load current user data
+            const user = JSON.parse(localStorage.getItem('educonnect_user') || '{}');
+            
+            document.getElementById('profileName').textContent = user.name || '-';
+            document.getElementById('profilePhone').textContent = user.phone || '-';
+            document.getElementById('profileEmail').textContent = user.email || '-';
+            document.getElementById('profileRole').textContent = (user.role || 'customer').toUpperCase();
+            document.getElementById('profileKYC').textContent = (user.kyc_status || 'pending').toUpperCase();
+            
+            // Show admin section if user is admin
+            if (user.role === 'admin') {
+                adminSection.style.display = 'block';
+            } else {
+                adminSection.style.display = 'none';
+            }
+            
+            profileModal.classList.add('show');
+        }
+        
+        function closeProfileModal() {
+            profileModal.classList.remove('show');
+        }
+        
+        profileCloseBtn.addEventListener('click', closeProfileModal);
+        profileCloseBtn2.addEventListener('click', closeProfileModal);
+        
+        // Logout handler
+        btnLogout.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    // Call logout API
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + sessionToken
+                        }
+                    });
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+                
+                // Clear local storage
+                localStorage.removeItem('educonnect_session');
+                localStorage.removeItem('educonnect_user');
+                
+                // Redirect to login
+                window.location.href = '/';
+            }
+        });
+        
+        // Admin modal handlers
+        btnManageWhitelist.addEventListener('click', () => {
+            closeProfileModal();
+            openWhitelistModal();
+        });
+        
+        btnManageLibrary.addEventListener('click', () => {
+            closeProfileModal();
+            openLibraryModal();
+        });
+        
+        // Whitelist Admin Modal Logic
+        const whitelistModal = document.getElementById('whitelistModal');
+        const whitelistCloseBtn = document.getElementById('whitelistCloseBtn');
+        const whitelistCloseBtn2 = document.getElementById('whitelistCloseBtn2');
+        const btnAddWhitelist = document.getElementById('btnAddWhitelist');
+        const whitelistExport = document.getElementById('whitelistExport');
+        const whitelistImport = document.getElementById('whitelistImport');
+        const whitelistTableBody = document.getElementById('whitelistTableBody');
+        
+        async function openWhitelistModal() {
+            whitelistModal.classList.add('show');
+            await loadWhitelistData();
+        }
+        
+        function closeWhitelistModal() {
+            whitelistModal.classList.remove('show');
+        }
+        
+        async function loadWhitelistData() {
+            try {
+                whitelistTableBody.innerHTML = '<tr><td colspan="5" class="loading-row">Loading...</td></tr>';
+                
+                const response = await fetch('/api/admin/whitelist', {
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load whitelist');
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.whitelist) {
+                    renderWhitelistTable(data.whitelist);
+                } else {
+                    whitelistTableBody.innerHTML = '<tr><td colspan="5" class="error-row">Failed to load whitelist</td></tr>';
+                }
+            } catch (error) {
+                console.error('Load whitelist error:', error);
+                whitelistTableBody.innerHTML = '<tr><td colspan="5" class="error-row">Error loading whitelist</td></tr>';
+            }
+        }
+        
+        function renderWhitelistTable(whitelist) {
+            if (whitelist.length === 0) {
+                whitelistTableBody.innerHTML = '<tr><td colspan="5" class="empty-row">No entries found</td></tr>';
+                return;
+            }
+            
+            whitelistTableBody.innerHTML = whitelist.map(entry => \`
+                <tr>
+                    <td>\${entry.phone || '-'}</td>
+                    <td>\${entry.email || '-'}</td>
+                    <td><span class="role-badge role-\${entry.role}">\${entry.role.toUpperCase()}</span></td>
+                    <td>\${new Date(entry.added_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn-action btn-delete" onclick="deleteWhitelistEntry(\${entry.id})">🗑️ Delete</button>
+                    </td>
+                </tr>
+            \`).join('');
+        }
+        
+        async function deleteWhitelistEntry(id) {
+            if (!confirm('Are you sure you want to remove this entry?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(\`/api/admin/whitelist/\${id}\`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Entry removed successfully');
+                    await loadWhitelistData();
+                } else {
+                    alert('Failed to remove entry: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Error removing entry');
+            }
+        }
+        
+        // Make deleteWhitelistEntry globally accessible
+        window.deleteWhitelistEntry = deleteWhitelistEntry;
+        
+        btnAddWhitelist.addEventListener('click', () => {
+            const phone = prompt('Enter phone number (with country code, e.g., +27821234567):');
+            if (!phone) return;
+            
+            const email = prompt('Enter email address (optional):');
+            const role = prompt('Enter role (admin/account/customer):');
+            
+            if (!role || !['admin', 'account', 'customer'].includes(role.toLowerCase())) {
+                alert('Invalid role. Must be admin, account, or customer.');
+                return;
+            }
+            
+            addWhitelistEntry(phone, email, role.toLowerCase());
+        });
+        
+        async function addWhitelistEntry(phone, email, role) {
+            try {
+                const response = await fetch('/api/admin/whitelist', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ phone, email, role })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Entry added successfully');
+                    await loadWhitelistData();
+                } else {
+                    alert('Failed to add entry: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Add error:', error);
+                alert('Error adding entry');
+            }
+        }
+        
+        whitelistCloseBtn.addEventListener('click', closeWhitelistModal);
+        whitelistCloseBtn2.addEventListener('click', closeWhitelistModal);
+        
+        whitelistExport.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/admin/whitelist/export', {
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Export failed');
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'whitelist_' + new Date().toISOString().split('T')[0] + '.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Failed to export whitelist');
+            }
+        });
+        
+        whitelistImport.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/api/admin/whitelist/import', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(\`Import successful: \${data.imported} entries added\`);
+                    await loadWhitelistData();
+                } else {
+                    alert('Import failed: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('Error importing file');
+            }
+            
+            e.target.value = '';
+        });
+        
+        // Solution Library Admin Modal Logic
+        const libraryModal = document.getElementById('libraryModal');
+        const libraryCloseBtn = document.getElementById('libraryCloseBtn');
+        const libraryCloseBtn2 = document.getElementById('libraryCloseBtn2');
+        const btnAddLibrary = document.getElementById('btnAddLibrary');
+        const libraryExport = document.getElementById('libraryExport');
+        const libraryImport = document.getElementById('libraryImport');
+        const libraryTableBody = document.getElementById('libraryTableBody');
+        
+        async function openLibraryModal() {
+            libraryModal.classList.add('show');
+            await loadLibraryData();
+        }
+        
+        function closeLibraryModal() {
+            libraryModal.classList.remove('show');
+        }
+        
+        async function loadLibraryData() {
+            try {
+                libraryTableBody.innerHTML = '<tr><td colspan="6" class="loading-row">Loading...</td></tr>';
+                
+                const response = await fetch('/api/admin/library', {
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load library');
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.library) {
+                    renderLibraryTable(data.library);
+                } else {
+                    libraryTableBody.innerHTML = '<tr><td colspan="6" class="error-row">Failed to load library</td></tr>';
+                }
+            } catch (error) {
+                console.error('Load library error:', error);
+                libraryTableBody.innerHTML = '<tr><td colspan="6" class="error-row">Error loading library</td></tr>';
+            }
+        }
+        
+        function renderLibraryTable(library) {
+            if (library.length === 0) {
+                libraryTableBody.innerHTML = '<tr><td colspan="6" class="empty-row">No products found</td></tr>';
+                return;
+            }
+            
+            libraryTableBody.innerHTML = library.map(product => {
+                const prices = [];
+                if (product.price1) prices.push('R' + product.price1);
+                if (product.price2) prices.push('R' + product.price2);
+                if (product.price3) prices.push('R' + product.price3);
+                const priceRange = prices.length > 0 ? prices.join(' / ') : '-';
+                
+                return \`
+                    <tr>
+                        <td>\${product.solution}</td>
+                        <td>\${product.product}</td>
+                        <td>\${priceRange}</td>
+                        <td>R\${product.once_off || 0}</td>
+                        <td>R\${product.month_on_month || 0}</td>
+                        <td>
+                            <button class="btn-action btn-edit" onclick="editLibraryProduct(\${product.id})">✏️ Edit</button>
+                            <button class="btn-action btn-delete" onclick="deleteLibraryProduct(\${product.id})">🗑️ Delete</button>
+                        </td>
+                    </tr>
+                \`;
+            }).join('');
+        }
+        
+        async function deleteLibraryProduct(id) {
+            if (!confirm('Are you sure you want to remove this product?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(\`/api/admin/library/\${id}\`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Product removed successfully');
+                    await loadLibraryData();
+                } else {
+                    alert('Failed to remove product: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Error removing product');
+            }
+        }
+        
+        function editLibraryProduct(id) {
+            alert('Edit functionality coming soon! Product ID: ' + id);
+        }
+        
+        // Make functions globally accessible
+        window.deleteLibraryProduct = deleteLibraryProduct;
+        window.editLibraryProduct = editLibraryProduct;
+        
+        btnAddLibrary.addEventListener('click', () => {
+            alert('Add product form coming soon!');
+        });
+        
+        libraryCloseBtn.addEventListener('click', closeLibraryModal);
+        libraryCloseBtn2.addEventListener('click', closeLibraryModal);
+        
+        libraryExport.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/admin/library/export', {
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Export failed');
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'solution_library_' + new Date().toISOString().split('T')[0] + '.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Failed to export library');
+            }
+        });
+        
+        libraryImport.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/api/admin/library/import', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(\`Import successful: \${data.imported} products added\`);
+                    await loadLibraryData();
+                } else {
+                    alert('Import failed: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('Error importing file');
+            }
+            
+            e.target.value = '';
         });
         
         // Load dashboard on page load
