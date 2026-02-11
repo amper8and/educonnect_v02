@@ -323,6 +323,335 @@ app.get('/dashboard', (c) => {
             color: #666;
         }
         
+        /* KYC Modal */
+        .kyc-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .kyc-modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .kyc-modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 700px;
+            width: 100%;
+            margin: 2rem auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .kyc-modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .kyc-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .kyc-close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .kyc-close-btn:hover {
+            color: #000;
+        }
+        
+        /* Progress Indicator */
+        .kyc-progress {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .kyc-step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+        
+        .kyc-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 60%;
+            width: 80%;
+            height: 2px;
+            background: #e0e0e0;
+        }
+        
+        .kyc-step.active:not(:last-child)::after,
+        .kyc-step.completed:not(:last-child)::after {
+            background: #FFCB00;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            border: 2px solid #e0e0e0;
+            z-index: 1;
+        }
+        
+        .kyc-step.active .step-number {
+            background: #FFCB00;
+            color: #000;
+            border-color: #FFCB00;
+        }
+        
+        .kyc-step.completed .step-number {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+        
+        .kyc-step.completed .step-number::after {
+            content: '✓';
+        }
+        
+        .step-label {
+            font-size: 0.875rem;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .kyc-step.active .step-label {
+            color: #000;
+            font-weight: 700;
+        }
+        
+        /* Step Content */
+        .kyc-step-content {
+            display: none;
+            padding: 2rem;
+        }
+        
+        .kyc-step-content.active {
+            display: block;
+        }
+        
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-description {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #FFCB00;
+        }
+        
+        .form-group input::placeholder {
+            color: #999;
+        }
+        
+        /* File Upload */
+        .file-upload-area {
+            border: 2px dashed #d0d0d0;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #FFCB00;
+            background: #FFFEF5;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-placeholder p {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+        
+        .upload-placeholder small {
+            color: #999;
+            font-size: 0.875rem;
+        }
+        
+        .upload-preview {
+            position: relative;
+        }
+        
+        .upload-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .remove-file-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f44336;
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .remove-file-btn:hover {
+            background: #d32f2f;
+        }
+        
+        /* Summary */
+        .kyc-summary {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+        
+        .kyc-summary h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #000;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-item span:first-child {
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .summary-item span:last-child {
+            color: #000;
+            font-weight: 600;
+        }
+        
+        /* Modal Actions */
+        .kyc-modal-actions {
+            padding: 2rem;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navigation-btns {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-back {
+            padding: 0.875rem 1.5rem;
+            background: #f5f5f5;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-back:hover {
+            background: #e0e0e0;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .dashboard-header {
@@ -400,6 +729,170 @@ app.get('/dashboard', (c) => {
             </div>
         </div>
     </main>
+    
+    <!-- KYC Modal -->
+    <div class="kyc-modal" id="kycModal">
+        <div class="kyc-modal-content">
+            <div class="kyc-modal-header">
+                <h2 class="kyc-modal-title">Complete Your KYC Verification</h2>
+                <button class="kyc-close-btn" id="kycCloseBtn">&times;</button>
+            </div>
+            
+            <!-- Progress Indicator -->
+            <div class="kyc-progress">
+                <div class="kyc-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Identity</div>
+                </div>
+                <div class="kyc-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Authorization</div>
+                </div>
+                <div class="kyc-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Verification</div>
+                </div>
+                <div class="kyc-step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Documents</div>
+                </div>
+            </div>
+            
+            <!-- Step 1: Identity -->
+            <div class="kyc-step-content active" id="kycStep1">
+                <h3 class="step-title">Personal Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" id="kycFirstName" placeholder="Enter your first name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" id="kycLastName" placeholder="Enter your last name" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>SA ID Number *</label>
+                        <input type="text" id="kycIdNumber" placeholder="Enter your ID number" maxlength="13" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth *</label>
+                        <input type="date" id="kycDob" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2: Authorization -->
+            <div class="kyc-step-content" id="kycStep2">
+                <h3 class="step-title">Institution Authorization</h3>
+                <div class="form-group">
+                    <label>Institution Name *</label>
+                    <input type="text" id="kycInstitution" placeholder="Enter institution name" required>
+                </div>
+                <div class="form-group">
+                    <label>Your Role *</label>
+                    <select id="kycRole" required>
+                        <option value="">Select your role</option>
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="admin">Administrator</option>
+                        <option value="parent">Parent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Student/Staff ID *</label>
+                    <input type="text" id="kycStaffId" placeholder="Enter your ID number" required>
+                </div>
+            </div>
+            
+            <!-- Step 3: Verification -->
+            <div class="kyc-step-content" id="kycStep3">
+                <h3 class="step-title">Proof of Humanity</h3>
+                <p class="step-description">Please upload a selfie and your ID document for verification</p>
+                <div class="form-group">
+                    <label>Selfie Photo *</label>
+                    <div class="file-upload-area" id="selfieUploadArea">
+                        <input type="file" id="selfieInput" accept="image/*" style="display: none;">
+                        <div class="upload-placeholder">
+                            <div class="upload-icon">📸</div>
+                            <p>Click to upload selfie</p>
+                            <small>JPG, PNG up to 5MB</small>
+                        </div>
+                        <div class="upload-preview" id="selfiePreview" style="display: none;">
+                            <img id="selfieImg" alt="Selfie preview">
+                            <button class="remove-file-btn" id="removeSelfie">&times;</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>ID Document Photo *</label>
+                    <div class="file-upload-area" id="idUploadArea">
+                        <input type="file" id="idInput" accept="image/*" style="display: none;">
+                        <div class="upload-placeholder">
+                            <div class="upload-icon">🪪</div>
+                            <p>Click to upload ID document</p>
+                            <small>JPG, PNG up to 5MB</small>
+                        </div>
+                        <div class="upload-preview" id="idPreview" style="display: none;">
+                            <img id="idImg" alt="ID preview">
+                            <button class="remove-file-btn" id="removeId">&times;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 4: Documents -->
+            <div class="kyc-step-content" id="kycStep4">
+                <h3 class="step-title">Supporting Documents</h3>
+                <p class="step-description">Please upload proof of residence (utility bill, bank statement, etc.)</p>
+                <div class="form-group">
+                    <label>Proof of Residence *</label>
+                    <div class="file-upload-area" id="porUploadArea">
+                        <input type="file" id="porInput" accept="image/*,application/pdf" style="display: none;">
+                        <div class="upload-placeholder">
+                            <div class="upload-icon">📄</div>
+                            <p>Click to upload document</p>
+                            <small>PDF, JPG, PNG up to 5MB</small>
+                        </div>
+                        <div class="upload-preview" id="porPreview" style="display: none;">
+                            <img id="porImg" alt="Document preview">
+                            <button class="remove-file-btn" id="removePor">&times;</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="kyc-summary">
+                    <h4>Application Summary</h4>
+                    <div class="summary-item">
+                        <span>Name:</span>
+                        <span id="summaryName">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>ID Number:</span>
+                        <span id="summaryId">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Institution:</span>
+                        <span id="summaryInstitution">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Role:</span>
+                        <span id="summaryRole">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Actions -->
+            <div class="kyc-modal-actions">
+                <button class="btn-secondary" id="kycSaveExit">Save & Exit</button>
+                <div class="navigation-btns">
+                    <button class="btn-back" id="kycBackBtn" style="display: none;">Back</button>
+                    <button class="btn-primary" id="kycNextBtn">Next</button>
+                    <button class="btn-primary" id="kycSubmitBtn" style="display: none;">Submit KYC</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script>
         // Get session info
@@ -528,14 +1021,287 @@ app.get('/dashboard', (c) => {
         });
         
         document.getElementById('btnCompleteKYC').addEventListener('click', () => {
-            // TODO: Show KYC modal (Delivery 4)
-            alert('KYC modal coming soon!');
+            openKYCModal();
         });
         
         function viewSolution(id) {
             // TODO: View solution details (Delivery 5)
             alert(\`Viewing solution \${id} - Details coming in Delivery 5!\`);
         }
+        
+        // KYC Modal Logic
+        let currentKYCStep = 1;
+        let kycData = {
+            firstName: '',
+            lastName: '',
+            idNumber: '',
+            dob: '',
+            institution: '',
+            role: '',
+            staffId: '',
+            selfieData: null,
+            idDocData: null,
+            porData: null
+        };
+        
+        const kycModal = document.getElementById('kycModal');
+        const kycCloseBtn = document.getElementById('kycCloseBtn');
+        const kycBackBtn = document.getElementById('kycBackBtn');
+        const kycNextBtn = document.getElementById('kycNextBtn');
+        const kycSubmitBtn = document.getElementById('kycSubmitBtn');
+        const kycSaveExit = document.getElementById('kycSaveExit');
+        
+        function openKYCModal() {
+            kycModal.classList.add('show');
+            loadKYCProgress();
+        }
+        
+        function closeKYCModal() {
+            kycModal.classList.remove('show');
+        }
+        
+        kycCloseBtn.addEventListener('click', closeKYCModal);
+        
+        kycModal.addEventListener('click', (e) => {
+            if (e.target === kycModal) {
+                closeKYCModal();
+            }
+        });
+        
+        function goToKYCStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.kyc-step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.kyc-step').forEach(stepEl => {
+                stepEl.classList.remove('active');
+                if (parseInt(stepEl.dataset.step) < step) {
+                    stepEl.classList.add('completed');
+                } else {
+                    stepEl.classList.remove('completed');
+                }
+            });
+            
+            // Show current step
+            document.getElementById('kycStep' + step).classList.add('active');
+            document.querySelector(\`.kyc-step[data-step="\${step}"]\`).classList.add('active');
+            
+            currentKYCStep = step;
+            
+            // Update buttons
+            kycBackBtn.style.display = step > 1 ? 'block' : 'none';
+            kycNextBtn.style.display = step < 4 ? 'block' : 'none';
+            kycSubmitBtn.style.display = step === 4 ? 'block' : 'none';
+            
+            // Update summary if on step 4
+            if (step === 4) {
+                updateKYCSummary();
+            }
+        }
+        
+        kycBackBtn.addEventListener('click', () => {
+            if (currentKYCStep > 1) {
+                goToKYCStep(currentKYCStep - 1);
+            }
+        });
+        
+        kycNextBtn.addEventListener('click', () => {
+            if (validateKYCStep(currentKYCStep)) {
+                saveKYCStepData();
+                if (currentKYCStep < 4) {
+                    goToKYCStep(currentKYCStep + 1);
+                }
+            }
+        });
+        
+        function validateKYCStep(step) {
+            let isValid = true;
+            let errorMsg = '';
+            
+            if (step === 1) {
+                const firstName = document.getElementById('kycFirstName').value.trim();
+                const lastName = document.getElementById('kycLastName').value.trim();
+                const idNumber = document.getElementById('kycIdNumber').value.trim();
+                const dob = document.getElementById('kycDob').value;
+                
+                if (!firstName || !lastName || !idNumber || !dob) {
+                    errorMsg = 'Please fill in all required fields';
+                    isValid = false;
+                } else if (idNumber.length !== 13) {
+                    errorMsg = 'ID number must be 13 digits';
+                    isValid = false;
+                }
+            } else if (step === 2) {
+                const institution = document.getElementById('kycInstitution').value.trim();
+                const role = document.getElementById('kycRole').value;
+                const staffId = document.getElementById('kycStaffId').value.trim();
+                
+                if (!institution || !role || !staffId) {
+                    errorMsg = 'Please fill in all required fields';
+                    isValid = false;
+                }
+            } else if (step === 3) {
+                if (!kycData.selfieData || !kycData.idDocData) {
+                    errorMsg = 'Please upload both selfie and ID document';
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                alert(errorMsg);
+            }
+            
+            return isValid;
+        }
+        
+        function saveKYCStepData() {
+            if (currentKYCStep === 1) {
+                kycData.firstName = document.getElementById('kycFirstName').value.trim();
+                kycData.lastName = document.getElementById('kycLastName').value.trim();
+                kycData.idNumber = document.getElementById('kycIdNumber').value.trim();
+                kycData.dob = document.getElementById('kycDob').value;
+            } else if (currentKYCStep === 2) {
+                kycData.institution = document.getElementById('kycInstitution').value.trim();
+                kycData.role = document.getElementById('kycRole').value;
+                kycData.staffId = document.getElementById('kycStaffId').value.trim();
+            }
+            
+            // Save to localStorage for persistence
+            localStorage.setItem('kyc_draft', JSON.stringify(kycData));
+        }
+        
+        function loadKYCProgress() {
+            const draft = localStorage.getItem('kyc_draft');
+            if (draft) {
+                kycData = JSON.parse(draft);
+                
+                // Populate fields
+                if (kycData.firstName) document.getElementById('kycFirstName').value = kycData.firstName;
+                if (kycData.lastName) document.getElementById('kycLastName').value = kycData.lastName;
+                if (kycData.idNumber) document.getElementById('kycIdNumber').value = kycData.idNumber;
+                if (kycData.dob) document.getElementById('kycDob').value = kycData.dob;
+                if (kycData.institution) document.getElementById('kycInstitution').value = kycData.institution;
+                if (kycData.role) document.getElementById('kycRole').value = kycData.role;
+                if (kycData.staffId) document.getElementById('kycStaffId').value = kycData.staffId;
+            }
+        }
+        
+        function updateKYCSummary() {
+            document.getElementById('summaryName').textContent = \`\${kycData.firstName} \${kycData.lastName}\`;
+            document.getElementById('summaryId').textContent = kycData.idNumber;
+            document.getElementById('summaryInstitution').textContent = kycData.institution;
+            document.getElementById('summaryRole').textContent = kycData.role;
+        }
+        
+        // File Upload Handlers
+        function setupFileUpload(inputId, areaId, previewId, imgId, removeId, dataKey) {
+            const input = document.getElementById(inputId);
+            const area = document.getElementById(areaId);
+            const preview = document.getElementById(previewId);
+            const img = document.getElementById(imgId);
+            const removeBtn = document.getElementById(removeId);
+            
+            area.addEventListener('click', () => {
+                if (!kycData[dataKey]) {
+                    input.click();
+                }
+            });
+            
+            input.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Simulate file upload with base64 encoding
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        kycData[dataKey] = event.target.result;
+                        img.src = event.target.result;
+                        area.querySelector('.upload-placeholder').style.display = 'none';
+                        preview.style.display = 'block';
+                        saveKYCStepData();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                kycData[dataKey] = null;
+                input.value = '';
+                area.querySelector('.upload-placeholder').style.display = 'block';
+                preview.style.display = 'none';
+                saveKYCStepData();
+            });
+        }
+        
+        setupFileUpload('selfieInput', 'selfieUploadArea', 'selfiePreview', 'selfieImg', 'removeSelfie', 'selfieData');
+        setupFileUpload('idInput', 'idUploadArea', 'idPreview', 'idImg', 'removeId', 'idDocData');
+        setupFileUpload('porInput', 'porUploadArea', 'porPreview', 'porImg', 'removePor', 'porData');
+        
+        // Save & Exit
+        kycSaveExit.addEventListener('click', async () => {
+            saveKYCStepData();
+            alert('Your progress has been saved. You can continue later.');
+            closeKYCModal();
+        });
+        
+        // Submit KYC
+        kycSubmitBtn.addEventListener('click', async () => {
+            if (!kycData.porData) {
+                alert('Please upload proof of residence');
+                return;
+            }
+            
+            saveKYCStepData();
+            
+            kycSubmitBtn.disabled = true;
+            kycSubmitBtn.textContent = 'Submitting...';
+            
+            try {
+                const response = await fetch('/api/kyc/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + sessionToken
+                    },
+                    body: JSON.stringify({
+                        name: kycData.firstName,
+                        surname: kycData.lastName,
+                        id_number: kycData.idNumber,
+                        date_of_birth: kycData.dob,
+                        institution_name: kycData.institution,
+                        institution_role: kycData.role,
+                        student_staff_id: kycData.staffId,
+                        selfie_url: kycData.selfieData,
+                        id_document_url: kycData.idDocData,
+                        proof_of_residence_url: kycData.porData
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.removeItem('kyc_draft');
+                    alert('KYC verification submitted successfully!');
+                    closeKYCModal();
+                    
+                    // Update user data and hide KYC banner
+                    const user = JSON.parse(localStorage.getItem('educonnect_user') || '{}');
+                    user.kyc_status = 'completed';
+                    localStorage.setItem('educonnect_user', JSON.stringify(user));
+                    
+                    // Reload dashboard
+                    loadDashboard();
+                } else {
+                    throw new Error(data.message || 'Failed to submit KYC');
+                }
+            } catch (error) {
+                console.error('KYC submission error:', error);
+                alert('Failed to submit KYC. Please try again.');
+            } finally {
+                kycSubmitBtn.disabled = false;
+                kycSubmitBtn.textContent = 'Submit KYC';
+            }
+        });
         
         // Load dashboard on page load
         loadDashboard();
