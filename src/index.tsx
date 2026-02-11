@@ -1736,7 +1736,13 @@ app.get('/dashboard', (c) => {
         function loadKYCProgress() {
             const draft = localStorage.getItem('kyc_draft');
             if (draft) {
-                kycData = JSON.parse(draft);
+                const savedData = JSON.parse(draft);
+                
+                // Merge saved data with existing kycData (preserving image data)
+                kycData = {
+                    ...kycData,
+                    ...savedData
+                };
                 
                 // Populate fields
                 if (kycData.firstName) document.getElementById('kycFirstName').value = kycData.firstName;
