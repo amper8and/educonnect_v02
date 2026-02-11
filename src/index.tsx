@@ -1167,7 +1167,23 @@ app.get('/dashboard', (c) => {
             }
             
             // Save to localStorage for persistence
-            localStorage.setItem('kyc_draft', JSON.stringify(kycData));
+            try {
+                // Don't save images to localStorage - they're too large
+                // Only save text fields
+                const dataToSave = {
+                    firstName: kycData.firstName,
+                    lastName: kycData.lastName,
+                    idNumber: kycData.idNumber,
+                    dob: kycData.dob,
+                    institution: kycData.institution,
+                    role: kycData.role,
+                    staffId: kycData.staffId
+                };
+                localStorage.setItem('kyc_draft', JSON.stringify(dataToSave));
+            } catch (e) {
+                console.warn('Could not save to localStorage:', e);
+                // Continue without saving - not critical for demo
+            }
         }
         
         function loadKYCProgress() {
@@ -1193,7 +1209,7 @@ app.get('/dashboard', (c) => {
             document.getElementById('summaryRole').textContent = kycData.role;
         }
         
-        // File Upload Handlers
+        // File Upload Handlers with Image Compression
         function setupFileUpload(inputId, areaId, previewId, imgId, removeId, dataKey) {
             const input = document.getElementById(inputId);
             const area = document.getElementById(areaId);
@@ -1210,16 +1226,15 @@ app.get('/dashboard', (c) => {
             input.addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (file) {
-                    // Simulate file upload with base64 encoding
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        kycData[dataKey] = event.target.result;
-                        img.src = event.target.result;
-                        area.querySelector('.upload-placeholder').style.display = 'none';
-                        preview.style.display = 'block';
-                        saveKYCStepData();
-                    };
-                    reader.readAsDataURL(file);
+                    // Compress image before storing
+                    const compressedDataUrl = await compressImage(file);
+                    kycData[dataKey] = compressedDataUrl;
+                    img.src = compressedDataUrl;
+                    area.querySelector('.upload-placeholder').style.display = 'none';
+                    preview.style.display = 'block';
+                    
+                    // Don't save to localStorage yet - only save on Save & Exit
+                    // This prevents QuotaExceededError during upload
                 }
             });
             
@@ -1229,7 +1244,43 @@ app.get('/dashboard', (c) => {
                 input.value = '';
                 area.querySelector('.upload-placeholder').style.display = 'block';
                 preview.style.display = 'none';
-                saveKYCStepData();
+            });
+        }
+        
+        // Compress image to reduce localStorage size
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Resize to max 800x800 while maintaining aspect ratio
+                        let width = img.width;
+                        let height = img.height;
+                        const maxSize = 800;
+                        
+                        if (width > height && width > maxSize) {
+                            height = (height * maxSize) / width;
+                            width = maxSize;
+                        } else if (height > maxSize) {
+                            width = (width * maxSize) / height;
+                            height = maxSize;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Convert to JPEG with 70% quality for smaller size
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        resolve(compressedDataUrl);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             });
         }
         
