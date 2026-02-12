@@ -3453,9 +3453,139 @@ app.get('/solution-builder', (c) => {
                     document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
                     this.classList.add('selected');
                     builderData.solutionType = this.dataset.type;
+                    
+                    // Apply product visibility rules based on solution type
+                    applyProductRules(builderData.solutionType);
                     updatePricing();
                 });
             });
+            
+            // Apply product visibility rules
+            function applyProductRules(solutionType) {
+                // Get all product rows
+                const prepaidRow = document.querySelector('[data-product="prepaid"]')?.closest('.product-row-slider');
+                const wirelessRow = document.querySelector('[data-product="wireless"]')?.closest('.product-row-slider');
+                const fibreRow = document.querySelector('[data-product="fibre"]')?.closest('.product-row-slider');
+                const additionalServicesRow = document.querySelectorAll('.product-row-radio')[0];
+                const securityRow = document.querySelectorAll('.product-row-radio')[1];
+                
+                // Get individual service options
+                const aiTutor = document.querySelector('[data-value="ai-tutor"]');
+                const apn = document.querySelector('[data-value="apn"]');
+                const firewall = document.querySelector('[data-value="firewall"]');
+                const powerfleetVideo = document.querySelector('[data-value="powerfleet-video"]');
+                const powerfleetDash = document.querySelector('[data-value="powerfleet-dash"]');
+                const mixTelematics = document.querySelector('[data-value="mix-telematics"]');
+                const mypanic = document.querySelector('[data-value="mypanic"]');
+                
+                // Reset all to hidden/disabled
+                [prepaidRow, wirelessRow, fibreRow, additionalServicesRow, securityRow].forEach(row => {
+                    if (row) {
+                        row.style.display = 'none';
+                        row.style.opacity = '0.5';
+                        row.style.pointerEvents = 'none';
+                    }
+                });
+                
+                // Hide all service options initially
+                [aiTutor, apn, firewall, powerfleetVideo, powerfleetDash, mixTelematics, mypanic].forEach(opt => {
+                    if (opt) {
+                        opt.style.display = 'none';
+                    }
+                });
+                
+                // Apply rules based on solution type
+                switch(solutionType) {
+                    case 'EduStudent':
+                        // Show: Prepaid bundle + AI-Tutor & Market
+                        if (prepaidRow) {
+                            prepaidRow.style.display = 'block';
+                            prepaidRow.style.opacity = '1';
+                            prepaidRow.style.pointerEvents = 'auto';
+                        }
+                        if (additionalServicesRow) {
+                            additionalServicesRow.style.display = 'block';
+                            additionalServicesRow.style.opacity = '1';
+                            additionalServicesRow.style.pointerEvents = 'auto';
+                        }
+                        if (aiTutor) aiTutor.style.display = 'flex';
+                        // Clear other product selections
+                        builderData.products.wireless = '';
+                        builderData.products.fibre = '';
+                        builderData.products.services = 'ai-tutor';
+                        builderData.products.security = '';
+                        break;
+                        
+                    case 'EduFlex':
+                        // Show: Uncapped wireless only
+                        if (wirelessRow) {
+                            wirelessRow.style.display = 'block';
+                            wirelessRow.style.opacity = '1';
+                            wirelessRow.style.pointerEvents = 'auto';
+                        }
+                        // Clear other product selections
+                        builderData.products.prepaid = '';
+                        builderData.products.fibre = '';
+                        builderData.products.services = '';
+                        builderData.products.security = '';
+                        break;
+                        
+                    case 'EduSchool':
+                        // Show: Uncapped fibre + APN + Eagle Eye + Secure Firewall
+                        if (fibreRow) {
+                            fibreRow.style.display = 'block';
+                            fibreRow.style.opacity = '1';
+                            fibreRow.style.pointerEvents = 'auto';
+                        }
+                        if (additionalServicesRow) {
+                            additionalServicesRow.style.display = 'block';
+                            additionalServicesRow.style.opacity = '1';
+                            additionalServicesRow.style.pointerEvents = 'auto';
+                        }
+                        if (apn) apn.style.display = 'flex';
+                        if (firewall) firewall.style.display = 'flex';
+                        // Clear other product selections
+                        builderData.products.prepaid = '';
+                        builderData.products.wireless = '';
+                        builderData.products.services = '';
+                        builderData.products.security = '';
+                        break;
+                        
+                    case 'EduSafe':
+                        // Show: All security options
+                        if (securityRow) {
+                            securityRow.style.display = 'block';
+                            securityRow.style.opacity = '1';
+                            securityRow.style.pointerEvents = 'auto';
+                        }
+                        if (powerfleetVideo) powerfleetVideo.style.display = 'flex';
+                        if (powerfleetDash) powerfleetDash.style.display = 'flex';
+                        if (mixTelematics) mixTelematics.style.display = 'flex';
+                        if (mypanic) mypanic.style.display = 'flex';
+                        // Clear other product selections
+                        builderData.products.prepaid = '';
+                        builderData.products.wireless = '';
+                        builderData.products.fibre = '';
+                        builderData.products.services = '';
+                        break;
+                        
+                    default:
+                        // Show all if no solution selected
+                        [prepaidRow, wirelessRow, fibreRow, additionalServicesRow, securityRow].forEach(row => {
+                            if (row) {
+                                row.style.display = 'block';
+                                row.style.opacity = '1';
+                                row.style.pointerEvents = 'auto';
+                            }
+                        });
+                        [aiTutor, apn, firewall, powerfleetVideo, powerfleetDash, mixTelematics, mypanic].forEach(opt => {
+                            if (opt) opt.style.display = 'flex';
+                        });
+                }
+            }
+            
+            // Initialize with no solution selected (show all)
+            applyProductRules('');
             
             // Product option selection (radio buttons)
             document.querySelectorAll('.option-selector').forEach(option => {
