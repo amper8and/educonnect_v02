@@ -2743,9 +2743,13 @@ app.get('/solution-builder', (c) => {
                 justify-content: center;
             }
             
-            .radio-options-grid .option-selector:nth-child(3),
-            .radio-options-grid .option-selector:nth-child(4) {
+            .radio-options-grid .option-selector:nth-child(3) {
                 justify-content: flex-end;
+            }
+            
+            /* 4th child (myPanic) aligns left like 1st child in new row */
+            .radio-options-grid .option-selector:nth-child(4) {
+                justify-content: flex-start;
             }
             
             .product-row {
@@ -3437,8 +3441,8 @@ app.get('/solution-builder', (c) => {
                     prepaid: '10GB',
                     wireless: '',
                     fibre: '',
-                    services: 'ai-tutor',
-                    security: ''
+                    services: [],  // Changed to array for multiple selections
+                    security: []   // Changed to array for multiple selections
                 },
                 term: 0,
                 pricing: {
@@ -3509,11 +3513,13 @@ app.get('/solution-builder', (c) => {
                             additionalServicesRow.style.pointerEvents = 'auto';
                         }
                         if (aiTutor) aiTutor.style.display = 'flex';
-                        // Clear other product selections
+                        // Clear other product selections and their visual states
                         builderData.products.wireless = '';
                         builderData.products.fibre = '';
-                        builderData.products.services = 'ai-tutor';
-                        builderData.products.security = '';
+                        builderData.products.services = [];
+                        builderData.products.security = [];
+                        // Clear selected class from all options
+                        document.querySelectorAll('.option-selector').forEach(opt => opt.classList.remove('selected'));
                         break;
                         
                     case 'EduFlex':
@@ -3523,11 +3529,13 @@ app.get('/solution-builder', (c) => {
                             wirelessRow.style.opacity = '1';
                             wirelessRow.style.pointerEvents = 'auto';
                         }
-                        // Clear other product selections
+                        // Clear other product selections and their visual states
                         builderData.products.prepaid = '';
                         builderData.products.fibre = '';
-                        builderData.products.services = '';
-                        builderData.products.security = '';
+                        builderData.products.services = [];
+                        builderData.products.security = [];
+                        // Clear selected class from all options
+                        document.querySelectorAll('.option-selector').forEach(opt => opt.classList.remove('selected'));
                         break;
                         
                     case 'EduSchool':
@@ -3544,11 +3552,13 @@ app.get('/solution-builder', (c) => {
                         }
                         if (apn) apn.style.display = 'flex';
                         if (firewall) firewall.style.display = 'flex';
-                        // Clear other product selections
+                        // Clear other product selections and their visual states
                         builderData.products.prepaid = '';
                         builderData.products.wireless = '';
-                        builderData.products.services = '';
-                        builderData.products.security = '';
+                        builderData.products.services = [];
+                        builderData.products.security = [];
+                        // Clear selected class from all options
+                        document.querySelectorAll('.option-selector').forEach(opt => opt.classList.remove('selected'));
                         break;
                         
                     case 'EduSafe':
@@ -3562,11 +3572,13 @@ app.get('/solution-builder', (c) => {
                         if (powerfleetDash) powerfleetDash.style.display = 'flex';
                         if (mixTelematics) mixTelematics.style.display = 'flex';
                         if (mypanic) mypanic.style.display = 'flex';
-                        // Clear other product selections
+                        // Clear other product selections and their visual states
                         builderData.products.prepaid = '';
                         builderData.products.wireless = '';
                         builderData.products.fibre = '';
-                        builderData.products.services = '';
+                        builderData.products.services = [];
+                        // Clear selected class from all options
+                        document.querySelectorAll('.option-selector').forEach(opt => opt.classList.remove('selected'));
                         break;
                         
                     default:
@@ -3587,20 +3599,37 @@ app.get('/solution-builder', (c) => {
             // Initialize with no solution selected (show all)
             applyProductRules('');
             
-            // Product option selection (radio buttons)
+            // Product option selection (radio buttons - now independent toggles)
             document.querySelectorAll('.option-selector').forEach(option => {
                 option.addEventListener('click', function() {
                     const product = this.dataset.product;
                     const value = this.dataset.value;
                     
-                    // Remove selection from same product group
-                    document.querySelectorAll(\`[data-product="\${product}"]\`).forEach(o => {
-                        o.classList.remove('selected');
-                    });
+                    // Toggle selection on/off (checkbox behavior, not radio)
+                    if (this.classList.contains('selected')) {
+                        // Deselect if already selected
+                        this.classList.remove('selected');
+                        
+                        // Remove from builderData.products
+                        if (!builderData.products[product]) {
+                            builderData.products[product] = [];
+                        }
+                        if (Array.isArray(builderData.products[product])) {
+                            builderData.products[product] = builderData.products[product].filter(v => v !== value);
+                        } else {
+                            builderData.products[product] = '';
+                        }
+                    } else {
+                        // Select if not already selected
+                        this.classList.add('selected');
+                        
+                        // Add to builderData.products (support multiple selections)
+                        if (!builderData.products[product] || !Array.isArray(builderData.products[product])) {
+                            builderData.products[product] = [];
+                        }
+                        builderData.products[product].push(value);
+                    }
                     
-                    // Select this option
-                    this.classList.add('selected');
-                    builderData.products[product] = value;
                     updatePricing();
                 });
             });
