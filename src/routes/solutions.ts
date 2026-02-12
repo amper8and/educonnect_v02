@@ -39,6 +39,45 @@ solutions.get('/', async (c) => {
   }
 })
 
+// Get single solution by ID
+solutions.get('/:id', async (c) => {
+  try {
+    const sessionToken = c.req.header('Authorization')?.replace('Bearer ', '')
+    
+    if (!sessionToken) {
+      return c.json({ success: false, message: 'No session token' }, 401)
+    }
+    
+    // Get user from session
+    const user = await c.env.DB.prepare(`
+      SELECT id FROM users WHERE session_token = ?
+    `).bind(sessionToken).first()
+    
+    if (!user) {
+      return c.json({ success: false, message: 'Invalid session' }, 401)
+    }
+    
+    const solutionId = c.req.param('id')
+    
+    // Get the specific solution for this user
+    const solution = await c.env.DB.prepare(`
+      SELECT * FROM solutions WHERE id = ? AND user_id = ?
+    `).bind(solutionId, user.id).first()
+    
+    if (!solution) {
+      return c.json({ success: false, message: 'Solution not found' }, 404)
+    }
+    
+    return c.json({
+      success: true,
+      solution: solution
+    })
+  } catch (error) {
+    console.error('Get solution error:', error)
+    return c.json({ success: false, message: 'Failed to load solution' }, 500)
+  }
+})
+
 // Create solution
 solutions.post('/', async (c) => {
   try {
