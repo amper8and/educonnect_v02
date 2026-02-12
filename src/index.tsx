@@ -3425,6 +3425,11 @@ app.get('/solution-builder', (c) => {
                 window.location.href = '/';
             }
             
+            // Check if editing existing solution
+            const urlParams = new URLSearchParams(window.location.search);
+            const solutionId = urlParams.get('id');
+            let isEditMode = false;
+            
             // Back to Dashboard button
             document.getElementById('backToDashboard').addEventListener('click', () => {
                 if (confirm('Are you sure you want to leave? Any unsaved changes will be lost.')) {
@@ -3596,8 +3601,145 @@ app.get('/solution-builder', (c) => {
                 }
             }
             
+            // Load existing solution if editing
+            async function loadSolution(id) {
+                try {
+                    const response = await fetch(\`/api/solutions/\${id}\`, {
+                        headers: {
+                            'Authorization': 'Bearer ' + sessionToken
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.solution) {
+                        const solution = data.solution;
+                        isEditMode = true;
+                        
+                        // Parse configuration JSON
+                        const config = JSON.parse(solution.configuration);
+                        
+                        // Populate builderData
+                        builderData.solutionType = solution.solution_type;
+                        builderData.address = solution.address;
+                        builderData.customer = solution.customer_name;
+                        builderData.products = config;
+                        builderData.term = solution.term_months || 0;
+                        builderData.pricing = {
+                            setup: solution.price_once_off,
+                            monthly: solution.price_monthly
+                        };
+                        
+                        // Populate UI
+                        // 1. Select solution type card
+                        document.querySelectorAll('.type-card').forEach(card => {
+                            if (card.dataset.type === solution.solution_type) {
+                                card.classList.add('selected');
+                            }
+                        });
+                        
+                        // 2. Apply product rules for this solution type
+                        applyProductRules(solution.solution_type);
+                        
+                        // 3. Fill address and customer fields
+                        document.getElementById('addressInput').value = solution.address || '';
+                        document.getElementById('customerInput').value = solution.customer_name || '';
+                        
+                        // 4. Set slider values
+                        if (config.prepaid) {
+                            const prepaidSlider = document.querySelector('[data-product="prepaid"]');
+                            if (prepaidSlider) {
+                                const options = JSON.parse(prepaidSlider.dataset.options);
+                                const index = options.indexOf(config.prepaid);
+                                if (index >= 0) {
+                                    prepaidSlider.querySelectorAll('.slider-option').forEach((opt, i) => {
+                                        if (i === index) {
+                                            opt.classList.add('selected');
+                                        } else {
+                                            opt.classList.remove('selected');
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        
+                        if (config.wireless) {
+                            const wirelessSlider = document.querySelector('[data-product="wireless"]');
+                            if (wirelessSlider) {
+                                const options = JSON.parse(wirelessSlider.dataset.options);
+                                const index = options.indexOf(config.wireless);
+                                if (index >= 0) {
+                                    wirelessSlider.querySelectorAll('.slider-option').forEach((opt, i) => {
+                                        if (i === index) {
+                                            opt.classList.add('selected');
+                                        } else {
+                                            opt.classList.remove('selected');
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        
+                        if (config.fibre) {
+                            const fibreSlider = document.querySelector('[data-product="fibre"]');
+                            if (fibreSlider) {
+                                const options = JSON.parse(fibreSlider.dataset.options);
+                                const index = options.indexOf(config.fibre);
+                                if (index >= 0) {
+                                    fibreSlider.querySelectorAll('.slider-option').forEach((opt, i) => {
+                                        if (i === index) {
+                                            opt.classList.add('selected');
+                                        } else {
+                                            opt.classList.remove('selected');
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        
+                        // 5. Select service options (array-based)
+                        if (Array.isArray(config.services)) {
+                            config.services.forEach(service => {
+                                const option = document.querySelector(\`[data-product="services"][data-value="\${service}"]\`);
+                                if (option) option.classList.add('selected');
+                            });
+                        }
+                        
+                        // 6. Select security options (array-based)
+                        if (Array.isArray(config.security)) {
+                            config.security.forEach(security => {
+                                const option = document.querySelector(\`[data-product="security"][data-value="\${security}"]\`);
+                                if (option) option.classList.add('selected');
+                            });
+                        }
+                        
+                        // 7. Select term
+                        document.querySelectorAll('.term-btn').forEach(btn => {
+                            if (parseInt(btn.dataset.term) === builderData.term) {
+                                btn.classList.add('selected');
+                            } else {
+                                btn.classList.remove('selected');
+                            }
+                        });
+                        
+                        // 8. Update pricing display
+                        updatePricing();
+                        
+                        console.log('Solution loaded successfully', solution);
+                    }
+                } catch (error) {
+                    console.error('Error loading solution:', error);
+                    alert('Failed to load solution');
+                }
+            }
+            
             // Initialize with no solution selected (show all)
             applyProductRules('');
+            
+            // Load solution if in edit mode
+            if (solutionId) {
+                loadSolution(solutionId);
+            }
             
             // Product option selection (radio buttons - now independent toggles)
             document.querySelectorAll('.option-selector').forEach(option => {
