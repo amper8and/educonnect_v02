@@ -124,6 +124,75 @@ solutions.post('/', async (c) => {
   }
 })
 
+// Update solution
+solutions.put('/:id', async (c) => {
+  try {
+    const sessionToken = c.req.header('Authorization')?.replace('Bearer ', '')
+    
+    if (!sessionToken) {
+      return c.json({ success: false, message: 'No session token' }, 401)
+    }
+    
+    const user = await c.env.DB.prepare(`
+      SELECT id FROM users WHERE session_token = ?
+    `).bind(sessionToken).first()
+    
+    if (!user) {
+      return c.json({ success: false, message: 'Invalid session' }, 401)
+    }
+    
+    const solutionId = c.req.param('id')
+    
+    // Check if solution exists and belongs to user
+    const existingSolution = await c.env.DB.prepare(`
+      SELECT id, user_id, status FROM solutions WHERE id = ?
+    `).bind(solutionId).first()
+    
+    if (!existingSolution) {
+      return c.json({ success: false, message: 'Solution not found' }, 404)
+    }
+    
+    if (existingSolution.user_id !== user.id) {
+      return c.json({ success: false, message: 'Unauthorized' }, 403)
+    }
+    
+    const { solution_type, name, address, customer_name, configuration, price_once_off, price_monthly, term_months } = await c.req.json()
+    
+    // Update the solution
+    await c.env.DB.prepare(`
+      UPDATE solutions 
+      SET solution_type = ?, 
+          name = ?, 
+          address = ?, 
+          customer_name = ?, 
+          configuration = ?, 
+          price_once_off = ?, 
+          price_monthly = ?, 
+          term_months = ?,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).bind(
+      solution_type,
+      name,
+      address,
+      customer_name,
+      configuration,  // Already a JSON string from frontend
+      price_once_off || 0,
+      price_monthly || 0,
+      term_months || 0,
+      solutionId
+    ).run()
+    
+    return c.json({
+      success: true,
+      solution_id: solutionId
+    })
+  } catch (error) {
+    console.error('Update solution error:', error)
+    return c.json({ success: false, message: 'Failed to update solution' }, 500)
+  }
+})
+
 // Delete solution
 solutions.delete('/:id', async (c) => {
   try {

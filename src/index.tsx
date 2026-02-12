@@ -4217,8 +4217,13 @@ app.get('/solution-builder', (c) => {
                 }
                 
                 try {
-                    const response = await fetch('/api/solutions', {
-                        method: 'POST',
+                    // Determine if we're updating or creating
+                    const isUpdate = isEditMode && solutionId;
+                    const url = isUpdate ? \`/api/solutions/\${solutionId}\` : '/api/solutions';
+                    const method = isUpdate ? 'PUT' : 'POST';
+                    
+                    const response = await fetch(url, {
+                        method: method,
                         headers: {
                             'Authorization': 'Bearer ' + sessionToken,
                             'Content-Type': 'application/json'
@@ -4238,8 +4243,12 @@ app.get('/solution-builder', (c) => {
                     const data = await response.json();
                     
                     if (data.success) {
-                        alert('Solution saved successfully!');
+                        alert(isUpdate ? 'Solution updated successfully!' : 'Solution saved successfully!');
                         document.getElementById('accountModal').classList.remove('show');
+                        // Redirect to dashboard after save
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 500);
                     } else {
                         alert('Failed to save solution');
                     }
