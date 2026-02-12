@@ -2644,79 +2644,64 @@ app.get('/solution-builder', (c) => {
                 text-align: right;
             }
             
-            .slider-container {
+            /* Custom Slider */
+            .custom-slider {
                 position: relative;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
                 padding: 10px 0;
+                margin: 0 10px;
             }
             
-            .product-slider {
-                width: 100%;
-                height: 6px;
-                -webkit-appearance: none;
-                appearance: none;
-                background: transparent;
-                outline: none;
-                position: relative;
-                z-index: 2;
-                cursor: pointer;
-            }
-            
-            .product-slider::-webkit-slider-track {
-                width: 100%;
-                height: 6px;
-                background: #e0e0e0;
-                border-radius: 3px;
-            }
-            
-            .product-slider::-moz-range-track {
-                width: 100%;
-                height: 6px;
-                background: #e0e0e0;
-                border-radius: 3px;
-            }
-            
-            .product-slider::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 24px;
-                height: 24px;
-                border-radius: 50%;
-                background: #FFCB00;
-                cursor: pointer;
-                border: 3px solid white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            }
-            
-            .product-slider::-moz-range-thumb {
-                width: 24px;
-                height: 24px;
-                border-radius: 50%;
-                background: #FFCB00;
-                cursor: pointer;
-                border: 3px solid white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            }
-            
-            .slider-track {
+            .slider-track-line {
                 position: absolute;
-                top: 50%;
                 left: 0;
                 right: 0;
-                height: 6px;
-                transform: translateY(-50%);
-                pointer-events: none;
+                top: 50%;
+                height: 4px;
+                background: #e0e0e0;
+                border-radius: 2px;
                 z-index: 1;
             }
             
-            .slider-dot {
-                position: absolute;
-                width: 12px;
-                height: 12px;
-                background: white;
-                border: 2px solid #ccc;
+            .slider-option {
+                position: relative;
+                z-index: 2;
+                cursor: pointer;
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 8px;
+            }
+            
+            .slider-option:first-child {
+                justify-content: flex-start;
+            }
+            
+            .slider-option:last-child {
+                justify-content: flex-end;
+            }
+            
+            .slider-circle {
+                width: 20px;
+                height: 20px;
                 border-radius: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
+                background: white;
+                border: 3px solid #ccc;
+                transition: all 0.2s ease;
+            }
+            
+            .slider-option:hover .slider-circle {
+                border-color: #FFCB00;
+                transform: scale(1.1);
+            }
+            
+            .slider-option.selected .slider-circle {
+                background: #FFCB00;
+                border-color: #FFCB00;
+                box-shadow: 0 0 0 3px rgba(255, 203, 0, 0.2);
             }
             
             /* Product Rows with Radio Buttons */
@@ -3182,15 +3167,16 @@ app.get('/solution-builder', (c) => {
                         <span class="slider-label-right">25GB + 200mins</span>
                     </div>
                     <div class="slider-name">Prepaid bundle</div>
-                    <div class="slider-container">
-                        <input type="range" class="product-slider" id="prepaidSlider" 
-                               min="0" max="2" value="1" step="1" 
-                               data-product="prepaid"
-                               data-options='["5GB","10GB","25GB"]'>
-                        <div class="slider-track">
-                            <div class="slider-dot" style="left: 0%"></div>
-                            <div class="slider-dot" style="left: 50%"></div>
-                            <div class="slider-dot" style="left: 100%"></div>
+                    <div class="custom-slider" data-product="prepaid" data-options='["5GB","10GB","25GB"]'>
+                        <div class="slider-track-line"></div>
+                        <div class="slider-option" data-index="0" data-value="5GB">
+                            <div class="slider-circle"></div>
+                        </div>
+                        <div class="slider-option selected" data-index="1" data-value="10GB">
+                            <div class="slider-circle"></div>
+                        </div>
+                        <div class="slider-option" data-index="2" data-value="25GB">
+                            <div class="slider-circle"></div>
                         </div>
                     </div>
                 </div>
@@ -3203,15 +3189,16 @@ app.get('/solution-builder', (c) => {
                         <span class="slider-label-right">100Mbps</span>
                     </div>
                     <div class="slider-name">Uncapped wireless</div>
-                    <div class="slider-container">
-                        <input type="range" class="product-slider" id="wirelessSlider" 
-                               min="0" max="2" value="1" step="1"
-                               data-product="wireless"
-                               data-options='["10Mbps","20Mbps","100Mbps"]'>
-                        <div class="slider-track">
-                            <div class="slider-dot" style="left: 0%"></div>
-                            <div class="slider-dot" style="left: 50%"></div>
-                            <div class="slider-dot" style="left: 100%"></div>
+                    <div class="custom-slider" data-product="wireless" data-options='["10Mbps","20Mbps","100Mbps"]'>
+                        <div class="slider-track-line"></div>
+                        <div class="slider-option" data-index="0" data-value="10Mbps">
+                            <div class="slider-circle"></div>
+                        </div>
+                        <div class="slider-option selected" data-index="1" data-value="20Mbps">
+                            <div class="slider-circle"></div>
+                        </div>
+                        <div class="slider-option" data-index="2" data-value="100Mbps">
+                            <div class="slider-circle"></div>
                         </div>
                     </div>
                 </div>
@@ -3224,15 +3211,16 @@ app.get('/solution-builder', (c) => {
                         <span class="slider-label-right">500Mbps</span>
                     </div>
                     <div class="slider-name">Uncapped fibre</div>
-                    <div class="slider-container">
-                        <input type="range" class="product-slider" id="fibreSlider" 
-                               min="0" max="2" value="1" step="1"
-                               data-product="fibre"
-                               data-options='["50Mbps","200Mbps","500Mbps"]'>
-                        <div class="slider-track">
-                            <div class="slider-dot" style="left: 0%"></div>
-                            <div class="slider-dot" style="left: 50%"></div>
-                            <div class="slider-dot" style="left: 100%"></div>
+                    <div class="custom-slider" data-product="fibre" data-options='["50Mbps","200Mbps","500Mbps"]'>
+                        <div class="slider-track-line"></div>
+                        <div class="slider-option" data-index="0" data-value="50Mbps">
+                            <div class="slider-circle"></div>
+                        </div>
+                        <div class="slider-option selected" data-index="1" data-value="200Mbps">
+                            <div class="slider-circle"></div>
+                        </div>
+                        <div class="slider-option" data-index="2" data-value="500Mbps">
+                            <div class="slider-circle"></div>
                         </div>
                     </div>
                 </div>
@@ -3465,23 +3453,34 @@ app.get('/solution-builder', (c) => {
                 });
             });
             
-            // Product sliders
-            document.querySelectorAll('.product-slider').forEach(slider => {
-                slider.addEventListener('input', function() {
-                    const product = this.dataset.product;
-                    const options = JSON.parse(this.dataset.options);
-                    const selectedIndex = parseInt(this.value);
-                    const selectedValue = options[selectedIndex];
-                    
-                    builderData.products[product] = selectedValue;
-                    updatePricing();
-                });
-                
-                // Initialize default values
+            // Product sliders (custom sliders with clickable circles)
+            document.querySelectorAll('.custom-slider').forEach(slider => {
                 const product = slider.dataset.product;
                 const options = JSON.parse(slider.dataset.options);
-                const selectedIndex = parseInt(slider.value);
-                builderData.products[product] = options[selectedIndex];
+                
+                // Get all slider options
+                const sliderOptions = slider.querySelectorAll('.slider-option');
+                
+                sliderOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        // Remove selected class from all options in this slider
+                        sliderOptions.forEach(opt => opt.classList.remove('selected'));
+                        
+                        // Add selected class to clicked option
+                        this.classList.add('selected');
+                        
+                        // Update builder data
+                        const value = this.dataset.value;
+                        builderData.products[product] = value;
+                        updatePricing();
+                    });
+                });
+                
+                // Initialize default value from selected option
+                const selectedOption = slider.querySelector('.slider-option.selected');
+                if (selectedOption) {
+                    builderData.products[product] = selectedOption.dataset.value;
+                }
             });
             
             // Address & Customer inputs
