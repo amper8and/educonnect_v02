@@ -3126,7 +3126,7 @@ app.get('/solution-builder', (c) => {
             </div>
             <div class="total-indicator">
                 <span class="total-label">Your total</span>
-                <div class="total-amount" id="totalAmount">R99</div>
+                <div class="total-amount" id="totalAmount">R0</div>
             </div>
         </div>
         
@@ -3446,8 +3446,8 @@ app.get('/solution-builder', (c) => {
                 },
                 term: 0,
                 pricing: {
-                    setup: 799,
-                    monthly: 99
+                    setup: 0,      // Start at R0
+                    monthly: 0     // Start at R0
                 }
             };
             
@@ -3673,26 +3673,121 @@ app.get('/solution-builder', (c) => {
                 builderData.customer = e.target.value;
             });
             
-            // Update pricing
+            // Pricing data from solution_library.csv
+            const pricingData = {
+                'EduStudent': {
+                    'Prepaid Bundle': {
+                        '5GB': { monthly: 49, setup: 0 },
+                        '10GB': { monthly: 99, setup: 0 },
+                        '25GB': { monthly: 149, setup: 0 }
+                    },
+                    'AI-Tutor & Market': { monthly: 29, setup: 0 }
+                },
+                'EduFlex': {
+                    'Uncapped Wireless': {
+                        '10Mbps': { monthly: 249, setup: 499 },
+                        '20Mbps': { monthly: 299, setup: 499 },
+                        '100Mbps': { monthly: 349, setup: 499 }
+                    }
+                },
+                'EduSchool': {
+                    'Uncapped Fibre': {
+                        '50Mbps': { monthly: 325, setup: 999 },
+                        '200Mbps': { monthly: 425, setup: 999 },
+                        '500Mbps': { monthly: 845, setup: 999 }
+                    },
+                    'APN + Eagle Eye': { monthly: 199, setup: 0 },
+                    'Secure Firewall': { monthly: 599, setup: 0 }
+                },
+                'EduSafe': {
+                    'PowerFleet AI Video': { monthly: 800, setup: 2500 },
+                    'PowerFleet Dash Cam': { monthly: 600, setup: 200 },
+                    'MiX Telematics': { monthly: 550, setup: 550 },
+                    'myPanic App': { monthly: 0, setup: 0 }
+                }
+            };
+            
+            // Update pricing based on actual selections
             function updatePricing() {
-                // Simple pricing logic - would be more complex in production
-                let monthly = 99;
-                let setup = 799;
+                let monthly = 0;  // Start at R0
+                let setup = 0;    // Start at R0
                 
-                // Add prices based on selections
-                if (builderData.products.prepaid === '5GB') monthly += 49;
-                if (builderData.products.prepaid === '10GB') monthly += 99;
-                if (builderData.products.prepaid === '25GB') monthly += 149;
+                const solutionType = builderData.solutionType;
+                if (!solutionType || !pricingData[solutionType]) {
+                    // No solution selected, show R0
+                    builderData.pricing.monthly = 0;
+                    builderData.pricing.setup = 0;
+                    document.getElementById('totalAmount').textContent = 'R0';
+                    document.getElementById('monthlyCost').textContent = 'R0/month';
+                    document.getElementById('setupCost').textContent = 'R0';
+                    return;
+                }
                 
-                if (builderData.products.wireless === '10Mbps') monthly += 249;
-                if (builderData.products.wireless === '20Mbps') monthly += 299;
-                if (builderData.products.wireless === '100Mbps') monthly += 349;
+                const solutionPricing = pricingData[solutionType];
                 
-                if (builderData.products.fibre === '50Mbps') monthly += 325;
-                if (builderData.products.fibre === '200Mbps') monthly += 425;
-                if (builderData.products.fibre === '500Mbps') monthly += 845;
+                // Prepaid Bundle pricing
+                if (builderData.products.prepaid && solutionPricing['Prepaid Bundle']) {
+                    const option = builderData.products.prepaid;
+                    if (solutionPricing['Prepaid Bundle'][option]) {
+                        monthly += solutionPricing['Prepaid Bundle'][option].monthly;
+                        setup += solutionPricing['Prepaid Bundle'][option].setup;
+                    }
+                }
                 
-                // Apply term discount
+                // Uncapped Wireless pricing
+                if (builderData.products.wireless && solutionPricing['Uncapped Wireless']) {
+                    const option = builderData.products.wireless;
+                    if (solutionPricing['Uncapped Wireless'][option]) {
+                        monthly += solutionPricing['Uncapped Wireless'][option].monthly;
+                        setup += solutionPricing['Uncapped Wireless'][option].setup;
+                    }
+                }
+                
+                // Uncapped Fibre pricing
+                if (builderData.products.fibre && solutionPricing['Uncapped Fibre']) {
+                    const option = builderData.products.fibre;
+                    if (solutionPricing['Uncapped Fibre'][option]) {
+                        monthly += solutionPricing['Uncapped Fibre'][option].monthly;
+                        setup += solutionPricing['Uncapped Fibre'][option].setup;
+                    }
+                }
+                
+                // Additional Services pricing (now array-based)
+                if (Array.isArray(builderData.products.services)) {
+                    builderData.products.services.forEach(service => {
+                        // Map data-value to product name
+                        const serviceMap = {
+                            'ai-tutor': 'AI-Tutor & Market',
+                            'apn': 'APN + Eagle Eye',
+                            'firewall': 'Secure Firewall'
+                        };
+                        const serviceName = serviceMap[service];
+                        if (serviceName && solutionPricing[serviceName]) {
+                            monthly += solutionPricing[serviceName].monthly;
+                            setup += solutionPricing[serviceName].setup;
+                        }
+                    });
+                }
+                
+                // Security & Tracking pricing (now array-based)
+                if (Array.isArray(builderData.products.security)) {
+                    builderData.products.security.forEach(security => {
+                        // Map data-value to product name
+                        const securityMap = {
+                            'powerfleet-video': 'PowerFleet AI Video',
+                            'powerfleet-dash': 'PowerFleet Dash Cam',
+                            'mix-telematics': 'MiX Telematics',
+                            'mypanic': 'myPanic App'
+                        };
+                        const securityName = securityMap[security];
+                        if (securityName && solutionPricing[securityName]) {
+                            monthly += solutionPricing[securityName].monthly;
+                            setup += solutionPricing[securityName].setup;
+                        }
+                    });
+                }
+                
+                // Apply term discount (from CSV: -5%, -10%, -20%)
                 let discount = 0;
                 if (builderData.term === 6) discount = 0.05;
                 if (builderData.term === 12) discount = 0.10;
