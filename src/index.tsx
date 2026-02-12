@@ -315,37 +315,39 @@ app.get('/dashboard', (c) => {
             color: #000;
         }
         
-        /* Solution Card Actions */
-        .solution-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #f0f0f0;
-        }
-        
-        .btn-delete {
-            flex: 1;
-            padding: 0.5rem;
+        /* Delete Icon Button */
+        .btn-delete-icon {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             background: #ff4444;
             color: white;
             border: none;
-            border-radius: 6px;
-            font-family: 'MTN Brighter Sans', sans-serif;
-            font-size: 0.875rem;
-            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            font-size: 1.125rem;
             transition: all 0.3s;
+            z-index: 10;
         }
         
-        .btn-delete:hover {
+        .btn-delete-icon:hover {
             background: #cc0000;
-            transform: translateY(-1px);
+            transform: scale(1.1);
         }
         
-        .btn-delete:disabled {
-            background: #ccc;
+        .btn-delete-icon:disabled {
+            background: #e0e0e0;
+            color: #999;
             cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-delete-icon:disabled:hover {
             transform: none;
         }
         
@@ -1672,23 +1674,21 @@ app.get('/dashboard', (c) => {
                         <div class="price-value">\${monthly}</div>
                     </div>
                 </div>
-                <div class="solution-actions">
-                    <button class="btn-delete" data-solution-id="\${solution.id}" \${!canDelete ? 'disabled' : ''}>
-                        🗑️ Delete
-                    </button>
-                </div>
+                <button class="btn-delete-icon" data-solution-id="\${solution.id}" \${!canDelete ? 'disabled' : ''} title="\${canDelete ? 'Delete solution' : 'Cannot delete active or offer solutions'}">
+                    🗑️
+                </button>
             \`;
             
             // Add click handler for view (not on delete button)
             card.addEventListener('click', (e) => {
                 // Don't navigate if clicking delete button
-                if (!e.target.classList.contains('btn-delete')) {
+                if (!e.target.classList.contains('btn-delete-icon')) {
                     viewSolution(solution.id);
                 }
             });
             
             // Add delete button handler
-            const deleteBtn = card.querySelector('.btn-delete');
+            const deleteBtn = card.querySelector('.btn-delete-icon');
             if (deleteBtn && canDelete) {
                 deleteBtn.addEventListener('click', (e) => {
                     e.stopPropagation(); // Prevent card click
