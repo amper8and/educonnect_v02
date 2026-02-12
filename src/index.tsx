@@ -3616,8 +3616,18 @@ app.get('/solution-builder', (c) => {
                         const solution = data.solution;
                         isEditMode = true;
                         
-                        // Parse configuration JSON
-                        const config = JSON.parse(solution.configuration);
+                        // Parse configuration JSON (handle double-encoding from old saves)
+                        let config;
+                        try {
+                            config = JSON.parse(solution.configuration);
+                            // Check if it's double-encoded (string instead of object)
+                            if (typeof config === 'string') {
+                                config = JSON.parse(config);
+                            }
+                        } catch (e) {
+                            console.error('Failed to parse configuration:', e);
+                            config = { prepaid: '', wireless: '', fibre: '', services: [], security: [] };
+                        }
                         
                         // Populate builderData
                         builderData.solutionType = solution.solution_type;
@@ -3629,6 +3639,13 @@ app.get('/solution-builder', (c) => {
                             setup: solution.price_once_off,
                             monthly: solution.price_monthly
                         };
+                        
+                        console.log('Loaded solution data:', {
+                            solutionType: solution.solution_type,
+                            products: config,
+                            pricing: builderData.pricing,
+                            term: builderData.term
+                        });
                         
                         // Populate UI
                         // 1. Select solution type card
@@ -3722,8 +3739,10 @@ app.get('/solution-builder', (c) => {
                             }
                         });
                         
-                        // 8. Update pricing display
-                        updatePricing();
+                        // 8. Update pricing display (use saved pricing, don't recalculate)
+                        document.getElementById('totalAmount').textContent = 'R' + builderData.pricing.monthly;
+                        document.getElementById('monthlyCost').textContent = 'R' + builderData.pricing.monthly + '/month';
+                        document.getElementById('setupCost').textContent = 'R' + builderData.pricing.setup;
                         
                         console.log('Solution loaded successfully', solution);
                     }

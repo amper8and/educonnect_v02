@@ -108,7 +108,7 @@ solutions.post('/', async (c) => {
       name,
       address,
       customer_name,
-      JSON.stringify(configuration),
+      configuration,  // Already a JSON string from frontend
       price_once_off || 0,
       price_monthly || 0,
       term_months || 0
