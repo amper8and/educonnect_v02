@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { serveStatic } from 'hono/cloudflare-workers'
 import auth from './routes/auth'
 import solutions from './routes/solutions'
 import kyc from './routes/kyc'
@@ -17,13 +16,9 @@ const app = new Hono<{ Bindings: Bindings }>()
 // Enable CORS for API routes
 app.use('/api/*', cors())
 
-// Serve static files - but skip the problematic serve-static middleware for now
-// Serve static assets from public folder
-// Note: For Cloudflare Pages, assets in dist/ are automatically served
-// For local dev, we need to explicitly serve them
-app.use('/assets/*', serveStatic({ root: './public' }))
-app.use('/fonts/*', serveStatic({ root: './public' }))
-// Icons are served directly from dist/icons/ by Cloudflare Pages
+// Static files are automatically served by Cloudflare Pages from dist/
+// No serveStatic middleware needed - files in public/ are copied to dist/ during build
+// and Cloudflare Pages serves them automatically at their paths (/icons/*, /fonts/*, /assets/*)
 
 // Mount API routes
 app.route('/api/auth', auth)
