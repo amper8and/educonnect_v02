@@ -2617,14 +2617,14 @@ app.get('/solution-builder', (c) => {
             
             .slider-name {
                 font-weight: 700;
-                margin-bottom: 15px;
+                margin-bottom: 8px;
                 font-size: 0.95rem;
             }
             
             .slider-header {
                 display: flex;
                 justify-content: space-between;
-                margin-bottom: 8px;
+                margin-bottom: 12px;
                 font-size: 0.75rem;
                 color: #666;
             }
@@ -2638,10 +2638,12 @@ app.get('/solution-builder', (c) => {
             
             .slider-label-left {
                 text-align: left;
+                padding-left: 10px;
             }
             
             .slider-label-right {
                 text-align: right;
+                padding-right: 10px;
             }
             
             /* Custom Slider */
@@ -2724,6 +2726,26 @@ app.get('/solution-builder', (c) => {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 20px;
+            }
+            
+            .radio-options-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+                margin: 0 10px;
+            }
+            
+            .radio-options-grid .option-selector {
+                justify-content: flex-start;
+            }
+            
+            .radio-options-grid .option-selector:nth-child(2) {
+                justify-content: center;
+            }
+            
+            .radio-options-grid .option-selector:nth-child(3),
+            .radio-options-grid .option-selector:nth-child(4) {
+                justify-content: flex-end;
             }
             
             .product-row {
@@ -3161,12 +3183,12 @@ app.get('/solution-builder', (c) => {
                 
                 <!-- Prepaid Bundle with Slider -->
                 <div class="product-row-slider">
+                    <div class="slider-name">Prepaid bundle</div>
                     <div class="slider-header">
                         <span class="slider-label-left">5GB + 50mins</span>
                         <span class="slider-label-center">10GB + 100mins</span>
                         <span class="slider-label-right">25GB + 200mins</span>
                     </div>
-                    <div class="slider-name">Prepaid bundle</div>
                     <div class="custom-slider" data-product="prepaid" data-options='["5GB","10GB","25GB"]'>
                         <div class="slider-track-line"></div>
                         <div class="slider-option" data-index="0" data-value="5GB">
@@ -3183,12 +3205,12 @@ app.get('/solution-builder', (c) => {
                 
                 <!-- Uncapped Wireless with Slider -->
                 <div class="product-row-slider">
+                    <div class="slider-name">Uncapped wireless</div>
                     <div class="slider-header">
                         <span class="slider-label-left">10Mbps</span>
                         <span class="slider-label-center">20Mbps</span>
                         <span class="slider-label-right">100Mbps</span>
                     </div>
-                    <div class="slider-name">Uncapped wireless</div>
                     <div class="custom-slider" data-product="wireless" data-options='["10Mbps","20Mbps","100Mbps"]'>
                         <div class="slider-track-line"></div>
                         <div class="slider-option" data-index="0" data-value="10Mbps">
@@ -3205,12 +3227,12 @@ app.get('/solution-builder', (c) => {
                 
                 <!-- Uncapped Fibre with Slider -->
                 <div class="product-row-slider">
+                    <div class="slider-name">Uncapped fibre</div>
                     <div class="slider-header">
                         <span class="slider-label-left">50Mbps</span>
                         <span class="slider-label-center">200Mbps</span>
                         <span class="slider-label-right">500Mbps</span>
                     </div>
-                    <div class="slider-name">Uncapped fibre</div>
                     <div class="custom-slider" data-product="fibre" data-options='["50Mbps","200Mbps","500Mbps"]'>
                         <div class="slider-track-line"></div>
                         <div class="slider-option" data-index="0" data-value="50Mbps">
@@ -3228,7 +3250,7 @@ app.get('/solution-builder', (c) => {
                 <!-- Additional Services with Radio Buttons -->
                 <div class="product-row-radio">
                     <div class="product-name">Additional Services</div>
-                    <div class="radio-options">
+                    <div class="radio-options-grid">
                         <div class="option-selector selected" data-product="services" data-value="ai-tutor">
                             <div class="option-radio"></div>
                             <span class="option-label">AI-Tutor & Market</span>
@@ -3247,7 +3269,7 @@ app.get('/solution-builder', (c) => {
                 <!-- Security & Tracking with Radio Buttons -->
                 <div class="product-row-radio">
                     <div class="product-name">Security & Tracking</div>
-                    <div class="radio-options">
+                    <div class="radio-options-grid">
                         <div class="option-selector" data-product="security" data-value="powerfleet-video">
                             <div class="option-radio"></div>
                             <span class="option-label">PowerFleet AI Video</span>
