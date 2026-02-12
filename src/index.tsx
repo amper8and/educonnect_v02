@@ -315,6 +315,111 @@ app.get('/dashboard', (c) => {
             color: #000;
         }
         
+        /* Solution Card Actions */
+        .solution-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .btn-delete {
+            flex: 1;
+            padding: 0.5rem;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-delete:hover {
+            background: #cc0000;
+            transform: translateY(-1px);
+        }
+        
+        .btn-delete:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Confirmation Modal */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .confirm-modal.show {
+            display: flex;
+        }
+        
+        .confirm-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .confirm-content h3 {
+            margin-bottom: 1rem;
+            color: #000;
+        }
+        
+        .confirm-content p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .confirm-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-confirm-cancel,
+        .btn-confirm-delete {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            font-family: 'MTN Brighter Sans', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-confirm-cancel {
+            background: #f0f0f0;
+            color: #000;
+        }
+        
+        .btn-confirm-cancel:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-confirm-delete {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .btn-confirm-delete:hover {
+            background: #cc0000;
+        }
+        
         /* Loading State */
         .loading {
             display: flex;
@@ -1440,6 +1545,18 @@ app.get('/dashboard', (c) => {
         </div>
     </div>
     
+    <!-- Delete Confirmation Modal -->
+    <div class="confirm-modal" id="confirmDeleteModal">
+        <div class="confirm-content">
+            <h3>Delete Solution?</h3>
+            <p>Are you sure you want to delete this solution? This action cannot be undone.</p>
+            <div class="confirm-actions">
+                <button class="btn-confirm-cancel" id="btnCancelDelete">Cancel</button>
+                <button class="btn-confirm-delete" id="btnConfirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
         // Get session info
         const sessionToken = localStorage.getItem('educonnect_session');
@@ -1525,13 +1642,15 @@ app.get('/dashboard', (c) => {
         function createSolutionCard(solution) {
             const card = document.createElement('div');
             card.className = 'solution-card';
-            card.onclick = () => viewSolution(solution.id);
             
             const statusClass = solution.status === 'active' ? 'status-active' : 'status-draft';
             const statusText = solution.status.charAt(0).toUpperCase() + solution.status.slice(1);
             
             const onceOff = solution.price_once_off ? \`R\${parseFloat(solution.price_once_off).toFixed(2)}\` : 'R0.00';
             const monthly = solution.price_monthly ? \`R\${parseFloat(solution.price_monthly).toFixed(2)}\` : 'R0.00';
+            
+            // Check if solution can be deleted (not active or offer)
+            const canDelete = solution.status !== 'active' && solution.status !== 'offer';
             
             card.innerHTML = \`
                 <div class="solution-header">
@@ -1553,7 +1672,29 @@ app.get('/dashboard', (c) => {
                         <div class="price-value">\${monthly}</div>
                     </div>
                 </div>
+                <div class="solution-actions">
+                    <button class="btn-delete" data-solution-id="\${solution.id}" \${!canDelete ? 'disabled' : ''}>
+                        🗑️ Delete
+                    </button>
+                </div>
             \`;
+            
+            // Add click handler for view (not on delete button)
+            card.addEventListener('click', (e) => {
+                // Don't navigate if clicking delete button
+                if (!e.target.classList.contains('btn-delete')) {
+                    viewSolution(solution.id);
+                }
+            });
+            
+            // Add delete button handler
+            const deleteBtn = card.querySelector('.btn-delete');
+            if (deleteBtn && canDelete) {
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent card click
+                    confirmDeleteSolution(solution.id, solution.name);
+                });
+            }
             
             return card;
         }
@@ -1575,6 +1716,70 @@ app.get('/dashboard', (c) => {
             // Navigate to solution builder with solution ID for editing
             window.location.href = \`/solution-builder?id=\${id}\`;
         }
+        
+        // Delete solution functions
+        let solutionToDelete = null;
+        
+        function confirmDeleteSolution(id, name) {
+            solutionToDelete = id;
+            const modal = document.getElementById('confirmDeleteModal');
+            const modalText = modal.querySelector('p');
+            modalText.textContent = \`Are you sure you want to delete "\${name}"? This action cannot be undone.\`;
+            modal.classList.add('show');
+        }
+        
+        async function deleteSolution(id) {
+            try {
+                const response = await fetch(\`/api/solutions/\${id}\`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Remove solution card from DOM
+                    const card = document.querySelector(\`.solution-card[data-solution-id="\${id}"]\`)?.closest('.solution-card');
+                    if (card) {
+                        card.remove();
+                    }
+                    
+                    // Reload dashboard to refresh
+                    loadDashboard();
+                    
+                    alert('Solution deleted successfully!');
+                } else {
+                    alert(data.message || 'Failed to delete solution');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Error deleting solution');
+            }
+        }
+        
+        // Confirmation modal handlers
+        document.getElementById('btnCancelDelete').addEventListener('click', () => {
+            document.getElementById('confirmDeleteModal').classList.remove('show');
+            solutionToDelete = null;
+        });
+        
+        document.getElementById('btnConfirmDelete').addEventListener('click', async () => {
+            if (solutionToDelete) {
+                await deleteSolution(solutionToDelete);
+                document.getElementById('confirmDeleteModal').classList.remove('show');
+                solutionToDelete = null;
+            }
+        });
+        
+        // Close modal on background click
+        document.getElementById('confirmDeleteModal').addEventListener('click', (e) => {
+            if (e.target.id === 'confirmDeleteModal') {
+                document.getElementById('confirmDeleteModal').classList.remove('show');
+                solutionToDelete = null;
+            }
+        });
         
         // KYC Modal Logic
         let currentKYCStep = 1;

@@ -124,4 +124,61 @@ solutions.post('/', async (c) => {
   }
 })
 
+// Delete solution
+solutions.delete('/:id', async (c) => {
+  try {
+    const sessionToken = c.req.header('Authorization')?.replace('Bearer ', '')
+    
+    if (!sessionToken) {
+      return c.json({ success: false, message: 'No session token' }, 401)
+    }
+    
+    // Get user from session
+    const user = await c.env.DB.prepare(`
+      SELECT id FROM users WHERE session_token = ?
+    `).bind(sessionToken).first()
+    
+    if (!user) {
+      return c.json({ success: false, message: 'Invalid session' }, 401)
+    }
+    
+    const solutionId = c.req.param('id')
+    
+    // Get the solution to check ownership and status
+    const solution = await c.env.DB.prepare(`
+      SELECT id, user_id, status FROM solutions WHERE id = ?
+    `).bind(solutionId).first()
+    
+    if (!solution) {
+      return c.json({ success: false, message: 'Solution not found' }, 404)
+    }
+    
+    // Verify ownership
+    if (solution.user_id !== user.id) {
+      return c.json({ success: false, message: 'Unauthorized' }, 403)
+    }
+    
+    // Check if solution can be deleted (not active or offer)
+    if (solution.status === 'active' || solution.status === 'offer') {
+      return c.json({ 
+        success: false, 
+        message: 'Cannot delete active or pending offer solutions. Please contact support.' 
+      }, 400)
+    }
+    
+    // Delete the solution
+    await c.env.DB.prepare(`
+      DELETE FROM solutions WHERE id = ?
+    `).bind(solutionId).run()
+    
+    return c.json({
+      success: true,
+      message: 'Solution deleted successfully'
+    })
+  } catch (error) {
+    console.error('Delete solution error:', error)
+    return c.json({ success: false, message: 'Failed to delete solution' }, 500)
+  }
+})
+
 export default solutions
