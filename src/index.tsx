@@ -3322,7 +3322,7 @@ app.get('/solution-builder', (c) => {
                 <!-- Tabs -->
                 <div class="tab-buttons">
                     <button class="tab-btn active" data-tab="overview">Overview</button>
-                    <button class="tab-btn" data-tab="usage">By Solution</button>
+                    <button class="tab-btn" data-tab="usage">Usage</button>
                 </div>
                 
                 <!-- Overview Tab -->
