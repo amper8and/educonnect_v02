@@ -2609,6 +2609,138 @@ app.get('/solution-builder', (c) => {
                 border-radius: 8px;
             }
             
+            /* Product Rows with Sliders */
+            .product-row-slider {
+                padding: 20px 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .slider-name {
+                font-weight: 700;
+                margin-bottom: 15px;
+                font-size: 0.95rem;
+            }
+            
+            .slider-header {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 8px;
+                font-size: 0.75rem;
+                color: #666;
+            }
+            
+            .slider-label-left,
+            .slider-label-center,
+            .slider-label-right {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .slider-label-left {
+                text-align: left;
+            }
+            
+            .slider-label-right {
+                text-align: right;
+            }
+            
+            .slider-container {
+                position: relative;
+                padding: 10px 0;
+            }
+            
+            .product-slider {
+                width: 100%;
+                height: 6px;
+                -webkit-appearance: none;
+                appearance: none;
+                background: transparent;
+                outline: none;
+                position: relative;
+                z-index: 2;
+                cursor: pointer;
+            }
+            
+            .product-slider::-webkit-slider-track {
+                width: 100%;
+                height: 6px;
+                background: #e0e0e0;
+                border-radius: 3px;
+            }
+            
+            .product-slider::-moz-range-track {
+                width: 100%;
+                height: 6px;
+                background: #e0e0e0;
+                border-radius: 3px;
+            }
+            
+            .product-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: #FFCB00;
+                cursor: pointer;
+                border: 3px solid white;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+            
+            .product-slider::-moz-range-thumb {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: #FFCB00;
+                cursor: pointer;
+                border: 3px solid white;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+            
+            .slider-track {
+                position: absolute;
+                top: 50%;
+                left: 0;
+                right: 0;
+                height: 6px;
+                transform: translateY(-50%);
+                pointer-events: none;
+                z-index: 1;
+            }
+            
+            .slider-dot {
+                position: absolute;
+                width: 12px;
+                height: 12px;
+                background: white;
+                border: 2px solid #ccc;
+                border-radius: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+            
+            /* Product Rows with Radio Buttons */
+            .product-row-radio {
+                padding: 20px 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .product-row-radio:last-child {
+                border-bottom: none;
+            }
+            
+            .product-row-radio .product-name {
+                font-weight: 700;
+                margin-bottom: 15px;
+                font-size: 0.95rem;
+            }
+            
+            .radio-options {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
             .product-row {
                 padding: 15px 0;
                 border-bottom: 1px solid #f0f0f0;
@@ -3042,81 +3174,73 @@ app.get('/solution-builder', (c) => {
             <div class="products-main">
                 <div class="section-label">Setup as follows:</div>
                 
-                <!-- Prepaid Bundle -->
-                <div class="product-row">
-                    <div class="product-header">
-                        <div class="product-name">Prepaid bundle</div>
+                <!-- Prepaid Bundle with Slider -->
+                <div class="product-row-slider">
+                    <div class="slider-header">
+                        <span class="slider-label-left">5GB + 50mins</span>
+                        <span class="slider-label-center">10GB + 100mins</span>
+                        <span class="slider-label-right">25GB + 200mins</span>
                     </div>
-                    <div class="product-options">
-                        <div class="option-group">
-                            <div class="option-selector" data-product="prepaid" data-value="5GB">
-                                <div class="option-radio"></div>
-                                <span class="option-label">5GB + 50mins</span>
-                            </div>
-                            <div class="option-selector selected" data-product="prepaid" data-value="10GB">
-                                <div class="option-radio"></div>
-                                <span class="option-label">10GB + 100mins</span>
-                            </div>
-                            <div class="option-selector" data-product="prepaid" data-value="25GB">
-                                <div class="option-radio"></div>
-                                <span class="option-label">25GB + 200mins</span>
-                            </div>
+                    <div class="slider-name">Prepaid bundle</div>
+                    <div class="slider-container">
+                        <input type="range" class="product-slider" id="prepaidSlider" 
+                               min="0" max="2" value="1" step="1" 
+                               data-product="prepaid"
+                               data-options='["5GB","10GB","25GB"]'>
+                        <div class="slider-track">
+                            <div class="slider-dot" style="left: 0%"></div>
+                            <div class="slider-dot" style="left: 50%"></div>
+                            <div class="slider-dot" style="left: 100%"></div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Uncapped Wireless -->
-                <div class="product-row">
-                    <div class="product-header">
-                        <div class="product-name">Uncapped wireless</div>
+                <!-- Uncapped Wireless with Slider -->
+                <div class="product-row-slider">
+                    <div class="slider-header">
+                        <span class="slider-label-left">10Mbps</span>
+                        <span class="slider-label-center">20Mbps</span>
+                        <span class="slider-label-right">100Mbps</span>
                     </div>
-                    <div class="product-options">
-                        <div class="option-group">
-                            <div class="option-selector" data-product="wireless" data-value="10Mbps">
-                                <div class="option-radio"></div>
-                                <span class="option-label">10Mbps</span>
-                            </div>
-                            <div class="option-selector" data-product="wireless" data-value="20Mbps">
-                                <div class="option-radio"></div>
-                                <span class="option-label">20Mbps</span>
-                            </div>
-                            <div class="option-selector" data-product="wireless" data-value="100Mbps">
-                                <div class="option-radio"></div>
-                                <span class="option-label">100Mbps</span>
-                            </div>
+                    <div class="slider-name">Uncapped wireless</div>
+                    <div class="slider-container">
+                        <input type="range" class="product-slider" id="wirelessSlider" 
+                               min="0" max="2" value="1" step="1"
+                               data-product="wireless"
+                               data-options='["10Mbps","20Mbps","100Mbps"]'>
+                        <div class="slider-track">
+                            <div class="slider-dot" style="left: 0%"></div>
+                            <div class="slider-dot" style="left: 50%"></div>
+                            <div class="slider-dot" style="left: 100%"></div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Uncapped Fibre -->
-                <div class="product-row">
-                    <div class="product-header">
-                        <div class="product-name">Uncapped fibre</div>
+                <!-- Uncapped Fibre with Slider -->
+                <div class="product-row-slider">
+                    <div class="slider-header">
+                        <span class="slider-label-left">50Mbps</span>
+                        <span class="slider-label-center">200Mbps</span>
+                        <span class="slider-label-right">500Mbps</span>
                     </div>
-                    <div class="product-options">
-                        <div class="option-group">
-                            <div class="option-selector" data-product="fibre" data-value="50Mbps">
-                                <div class="option-radio"></div>
-                                <span class="option-label">50Mbps</span>
-                            </div>
-                            <div class="option-selector" data-product="fibre" data-value="200Mbps">
-                                <div class="option-radio"></div>
-                                <span class="option-label">200Mbps</span>
-                            </div>
-                            <div class="option-selector" data-product="fibre" data-value="500Mbps">
-                                <div class="option-radio"></div>
-                                <span class="option-label">500Mbps</span>
-                            </div>
+                    <div class="slider-name">Uncapped fibre</div>
+                    <div class="slider-container">
+                        <input type="range" class="product-slider" id="fibreSlider" 
+                               min="0" max="2" value="1" step="1"
+                               data-product="fibre"
+                               data-options='["50Mbps","200Mbps","500Mbps"]'>
+                        <div class="slider-track">
+                            <div class="slider-dot" style="left: 0%"></div>
+                            <div class="slider-dot" style="left: 50%"></div>
+                            <div class="slider-dot" style="left: 100%"></div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Additional Services -->
-                <div class="product-row">
-                    <div class="product-header">
-                        <div class="product-name">Additional Services</div>
-                    </div>
-                    <div class="product-options">
+                <!-- Additional Services with Radio Buttons -->
+                <div class="product-row-radio">
+                    <div class="product-name">Additional Services</div>
+                    <div class="radio-options">
                         <div class="option-selector selected" data-product="services" data-value="ai-tutor">
                             <div class="option-radio"></div>
                             <span class="option-label">AI-Tutor & Market</span>
@@ -3132,12 +3256,10 @@ app.get('/solution-builder', (c) => {
                     </div>
                 </div>
                 
-                <!-- Security Options -->
-                <div class="product-row">
-                    <div class="product-header">
-                        <div class="product-name">Security & Tracking</div>
-                    </div>
-                    <div class="product-options">
+                <!-- Security & Tracking with Radio Buttons -->
+                <div class="product-row-radio">
+                    <div class="product-name">Security & Tracking</div>
+                    <div class="radio-options">
                         <div class="option-selector" data-product="security" data-value="powerfleet-video">
                             <div class="option-radio"></div>
                             <span class="option-label">PowerFleet AI Video</span>
@@ -3325,7 +3447,7 @@ app.get('/solution-builder', (c) => {
                 });
             });
             
-            // Product option selection
+            // Product option selection (radio buttons)
             document.querySelectorAll('.option-selector').forEach(option => {
                 option.addEventListener('click', function() {
                     const product = this.dataset.product;
@@ -3341,6 +3463,25 @@ app.get('/solution-builder', (c) => {
                     builderData.products[product] = value;
                     updatePricing();
                 });
+            });
+            
+            // Product sliders
+            document.querySelectorAll('.product-slider').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const product = this.dataset.product;
+                    const options = JSON.parse(this.dataset.options);
+                    const selectedIndex = parseInt(this.value);
+                    const selectedValue = options[selectedIndex];
+                    
+                    builderData.products[product] = selectedValue;
+                    updatePricing();
+                });
+                
+                // Initialize default values
+                const product = slider.dataset.product;
+                const options = JSON.parse(slider.dataset.options);
+                const selectedIndex = parseInt(slider.value);
+                builderData.products[product] = options[selectedIndex];
             });
             
             // Address & Customer inputs
