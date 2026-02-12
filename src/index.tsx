@@ -2843,12 +2843,10 @@ app.get('/solution-builder', (c) => {
             
             .slider-label-left {
                 text-align: left;
-                padding-left: 10px;
             }
             
             .slider-label-right {
                 text-align: right;
-                padding-right: 10px;
             }
             
             /* Custom Slider */
@@ -2858,7 +2856,6 @@ app.get('/solution-builder', (c) => {
                 justify-content: space-between;
                 align-items: center;
                 padding: 10px 0;
-                margin: 0 10px;
             }
             
             .slider-track-line {
@@ -2885,10 +2882,12 @@ app.get('/solution-builder', (c) => {
             
             .slider-option:first-child {
                 justify-content: flex-start;
+                padding-left: 0;
             }
             
             .slider-option:last-child {
                 justify-content: flex-end;
+                padding-right: 0;
             }
             
             .slider-circle {
