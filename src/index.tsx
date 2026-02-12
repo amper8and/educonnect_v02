@@ -18,9 +18,12 @@ const app = new Hono<{ Bindings: Bindings }>()
 app.use('/api/*', cors())
 
 // Serve static files - but skip the problematic serve-static middleware for now
-// app.use('/static/*', serveStatic({ root: './public' }))
+// Serve static assets from public folder
+// Note: For Cloudflare Pages, assets in dist/ are automatically served
+// For local dev, we need to explicitly serve them
 app.use('/assets/*', serveStatic({ root: './public' }))
 app.use('/fonts/*', serveStatic({ root: './public' }))
+// Icons are served directly from dist/icons/ by Cloudflare Pages
 
 // Mount API routes
 app.route('/api/auth', auth)
@@ -2995,25 +2998,25 @@ app.get('/solution-builder', (c) => {
             <div class="types-grid">
                 <div class="type-card" data-type="EduStudent">
                     <div class="type-radio"></div>
-                    <div class="type-icon"><img src="https://www.genspark.ai/api/files/s/BinqRy7e" alt="EduStudent"></div>
+                    <div class="type-icon"><img src="/icons/edustudent.png" alt="EduStudent"></div>
                     <div class="type-name">EduStudent</div>
                     <div class="type-desc">Student connectivity on the go</div>
                 </div>
                 <div class="type-card" data-type="EduFlex">
                     <div class="type-radio"></div>
-                    <div class="type-icon"><img src="https://www.genspark.ai/api/files/s/HTWFCg9G" alt="EduFlex"></div>
+                    <div class="type-icon"><img src="/icons/eduflex.png" alt="EduFlex"></div>
                     <div class="type-name">EduFlex</div>
                     <div class="type-desc">Student connectivity @ my accommodation</div>
                 </div>
                 <div class="type-card" data-type="EduSchool">
                     <div class="type-radio"></div>
-                    <div class="type-icon"><img src="https://www.genspark.ai/api/files/s/40lYpa9R" alt="EduSchool"></div>
+                    <div class="type-icon"><img src="/icons/eduschool.png" alt="EduSchool"></div>
                     <div class="type-name">EduSchool</div>
                     <div class="type-desc">Always On productivity for education sites</div>
                 </div>
                 <div class="type-card" data-type="EduSafe">
                     <div class="type-radio"></div>
-                    <div class="type-icon"><img src="https://www.genspark.ai/api/files/s/nI5LCZx0" alt="EduSafe"></div>
+                    <div class="type-icon"><img src="/icons/edusafe.png" alt="EduSafe"></div>
                     <div class="type-name">EduSafe</div>
                     <div class="type-desc">Safety first student protection & monitoring</div>
                 </div>
@@ -3024,11 +3027,11 @@ app.get('/solution-builder', (c) => {
         <div class="details-section">
             <div class="section-label">For:</div>
             <div class="detail-field">
-                <div class="field-icon"><img src="https://www.genspark.ai/api/files/s/c5zzj89Y" alt="Address" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="field-icon"><img src="/icons/school.png" alt="Address" style="width: 100%; height: 100%; object-fit: contain;"></div>
                 <input type="text" class="field-input" id="addressInput" placeholder="Address:">
             </div>
             <div class="detail-field">
-                <div class="field-icon"><img src="https://www.genspark.ai/api/files/s/v3pBihep" alt="Customer" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="field-icon"><img src="/icons/person.png" alt="Customer" style="width: 100%; height: 100%; object-fit: contain;"></div>
                 <input type="text" class="field-input" id="customerInput" placeholder="Customer:">
             </div>
             <div class="availability">
